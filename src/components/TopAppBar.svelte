@@ -35,7 +35,7 @@
       positioning={{ placement: 'left-start' }}
       arrow={false}
       contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-      triggerBase="btn m-0 p-0 gap-0 outline-none select-none"
+      triggerBase="btn m-0 p-0 gap-0 outline-hidden select-none"
     >
       {#snippet trigger()}
         <Icon
@@ -44,8 +44,8 @@
         />
       {/snippet}
       {#snippet content()}
-        <a
-          href="https://github.com/shubhattin/secrets_manager"
+        <!-- <a
+          href="https://github.com/shubhattin/tsc-users"
           target="_blank"
           rel="noopener noreferrer"
           class="will-close group flex space-x-1 rounded-md px-2 py-1 hover:bg-gray-200 dark:hover:bg-gray-700"
@@ -56,7 +56,7 @@
             class="-mt-1 mr-1 text-2xl group-hover:fill-indigo-700 dark:group-hover:fill-zinc-400"
           />
           <span>Github</span>
-        </a>
+        </a> -->
         <div class="wont-close flex space-x-3 rounded-md px-2 py-1">
           <span class="mt-1">Set Theme</span>
           <ThemeChanger />
