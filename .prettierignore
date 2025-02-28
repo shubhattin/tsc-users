@@ -9,5 +9,3 @@ pnpm-lock.yaml
 
 src/db/migrations
 src/db/scripts/out/
-
-/auth-schema.ts
