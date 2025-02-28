@@ -15,4 +15,7 @@ vite.config.ts.timestamp-*
 src/db/scripts/out/
 
 **/a.ts
+**/a.js
+**/a.json
+
 /auth-schema.ts
