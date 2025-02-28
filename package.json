@@ -9,17 +9,25 @@
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@skeletonlabs/skeleton": "3.0.0-next.11",
     "@skeletonlabs/skeleton-svelte": "1.0.0-next.20",
-    "@sveltejs/adapter-auto": "^4.0.0",
+    "@sveltejs/adapter-netlify": "^4.4.2",
     "@sveltejs/kit": "^2.16.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@trpc/client": "^10.45.2",
+    "@trpc/server": "^10.45.2",
+    "prettier": "^3.5.2",
+    "prettier-plugin-svelte": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "sass": "^1.85.1",
     "svelte": "^5.0.0",
     "svelte-check": "^4.0.0",
+    "trpc-svelte-query": "^2.1.0",
+    "trpc-sveltekit": "^3.6.2",
     "typescript": "^5.0.0",
     "vite": "^6.0.0"
   },
@@ -30,6 +38,9 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.9",
+    "buffer": "^6.0.3",
+    "devalue": "^5.1.1",
+    "superjson": "^2.2.2",
     "tailwindcss": "^4.0.9"
   }
 }
