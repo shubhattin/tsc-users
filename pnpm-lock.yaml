@@ -14,6 +14,9 @@ importers:
       '@fontsource/roboto':
         specifier: ^5.1.1
         version: 5.1.1
+      '@hono/zod-validator':
+        specifier: ^0.4.3
+        version: 0.4.3(hono@4.7.2)(zod@3.24.2)
       '@neondatabase/serverless':
         specifier: ^0.10.4
         version: 0.10.4
@@ -47,6 +50,9 @@ importers:
       drizzle-zod:
         specifier: ^0.7.0
         version: 0.7.0(drizzle-orm@0.40.0(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.0.0)(kysely@0.27.5)(postgres@3.4.5))(zod@3.24.2)
+      hono:
+        specifier: ^4.7.2
+        version: 4.7.2
       mode-watcher:
         specifier: ^0.3.1
         version: 0.3.1(svelte@5.20.5)
@@ -740,6 +746,12 @@ packages:
 
   '@hexagon/base64@1.1.28':
     resolution: {integrity: sha512-lhqDEAvWixy3bZ+UOYbPwUbBkwBq5C1LAJ/xPC8Oi+lL54oyakv/npbA0aU2hgCsx/1NUd4IBvV03+aUBWxerw==}
+
+  '@hono/zod-validator@0.4.3':
+    resolution: {integrity: sha512-xIgMYXDyJ4Hj6ekm9T9Y27s080Nl9NXHcJkOvkXPhubOLj8hZkOL8pDnnXfvCf5xEE8Q4oMFenQUZZREUY2gqQ==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.19.1
 
   '@iarna/toml@2.2.5':
     resolution: {integrity: sha512-trnsAYxU3xnS1gPHPyU961coFyLkh4gAD/0zQ5mymY4yOZ+CYvsPqUbOFSw0aDM4y0tV7tiFxL/1XfXPNC6IPg==}
@@ -1531,6 +1543,10 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  hono@4.7.2:
+    resolution: {integrity: sha512-8V5XxoOF6SI12jkHkzX/6aLBMU5GEF5g387EjVSQipS0DlxWgWGSMeEayY3CRBjtTUQYwLHx9JYouWqKzy2Vng==}
+    engines: {node: '>=16.9.0'}
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -2326,6 +2342,11 @@ snapshots:
   '@fontsource/roboto@5.1.1': {}
 
   '@hexagon/base64@1.1.28': {}
+
+  '@hono/zod-validator@0.4.3(hono@4.7.2)(zod@3.24.2)':
+    dependencies:
+      hono: 4.7.2
+      zod: 3.24.2
 
   '@iarna/toml@2.2.5': {}
 
@@ -3223,6 +3244,8 @@ snapshots:
       resolve-pkg-maps: 1.0.0
 
   graceful-fs@4.2.11: {}
+
+  hono@4.7.2: {}
 
   ieee754@1.2.1: {}
 

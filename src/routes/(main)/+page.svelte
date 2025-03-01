@@ -2,6 +2,7 @@
   import { useSession } from '$lib/auth-client';
   import type { PageData } from './$types';
   import { browser } from '$app/environment';
+  import MainProfilePage from '~/components/pages/main/MainProfilePage.svelte';
 
   const session = useSession();
 
@@ -23,5 +24,5 @@
 </svelte:head>
 
 {#if user_info}
-  {JSON.stringify(user_info)}
+  <MainProfilePage name={user_info.name} />
 {/if}
