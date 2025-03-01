@@ -1,7 +1,7 @@
 import type { Context, Next } from 'hono';
 import { auth } from '~/lib/auth';
 
-type SessionType = NonNullable<Awaited<ReturnType<typeof auth.api.getSession>>>;
+type SessionType = typeof auth.$Infer.Session;
 
 declare module 'hono' {
   interface ContextVariableMap {
@@ -32,9 +32,7 @@ export const protectedRoute = async (c: Context, next: Next) => {
 
 export const protectedAdminRoute = async (c: Context, next: Next) => {
   const user = c.get('user');
-  if (!user) {
-    return c.json({ error: 'Unauthorized' }, 401);
-  }
+  if (!user) return c.json({ error: 'Unauthorized' }, 401);
   if (user.role !== 'admin') {
     return c.json({ error: 'Unauthorized' }, 401);
   }

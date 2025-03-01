@@ -24,5 +24,7 @@
 </svelte:head>
 
 {#if user_info}
-  <MainProfilePage name={user_info.name} />
+  <div class="mt-8 px-1 sm:mt-12 sm:px-1.5">
+    <MainProfilePage user={user_info} />
+  </div>
 {/if}
