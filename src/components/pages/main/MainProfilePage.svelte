@@ -5,6 +5,7 @@
   import { BiLogOut } from 'svelte-icons-pack/bi';
   import { signOut, authClient } from '~/lib/auth-client';
   import Icon from '~/tools/Icon.svelte';
+  import NonAdminInfo from './NonAdminInfo.svelte';
 
   type SessionType = typeof authClient.$Infer.Session;
 
@@ -75,4 +76,9 @@
     {/snippet}
   </Popover>
 </div>
-<div class="text-sm text-slate-500 sm:text-base">{user.email}</div>
+<div class="text-sm text-slate-500 sm:text-base dark:text-slate-400">{user.email}</div>
+<div class="mt-3">
+  {#if user.role === 'user'}
+    <NonAdminInfo />
+  {/if}
+</div>
