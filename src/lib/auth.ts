@@ -27,7 +27,9 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: COOKIE_CACHE_TIME_MS / 1000
-    }
+    },
+    expiresIn: 60 * 60 * 24 * 15, // 15 days
+    updateAge: 60 * 60 * 24 * 1 // 1 day (every 1 day the session expiration is updated)
   },
   secondaryStorage: {
     get: async (key) => {

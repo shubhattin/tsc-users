@@ -1,3 +1,3 @@
 export const PAGE_TITLES = {
-  '/(main)': ['', '']
+  '/(main)/login': ['Login', 'text-xl font-bold']
 };
