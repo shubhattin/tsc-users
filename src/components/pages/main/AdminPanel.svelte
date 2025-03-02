@@ -14,6 +14,11 @@
   let selected_user_id = $state<string | null>('');
   let selected_user_type = $state<'admin' | 'regular' | 'unapproved'>('regular');
 
+  $effect(() => {
+    // on tab change reset the selected user id
+    if (selected_user_type) selected_user_id = null;
+  });
+
   const get_filtered_users = () => {
     const users = $users_list.data!;
     if (selected_user_type === 'admin') {
@@ -23,6 +28,11 @@
     } else if (selected_user_type === 'unapproved') {
       return users.filter((user) => !user.user_info?.is_approved);
     }
+  };
+
+  const get_string_trimmed = (str: string, limit: number = 20) => {
+    if (str.length > limit) return str.substring(0, limit) + '...';
+    return str;
   };
 </script>
 
@@ -37,7 +47,10 @@
     {/snippet}
     {#snippet content()}
       {@const users = get_filtered_users()!}
-      <div class="flex">
+      {@const user = users.find((user) => user.id === selected_user_id)}
+      <div
+        class="flex flex-col items-center justify-center space-y-2.5 sm:flex-row sm:items-start sm:justify-normal sm:space-x-3"
+      >
         <Segment
           name="size"
           orientation="vertical"
@@ -45,9 +58,16 @@
           gap="gap-y-1 sm:gap-y-1.5"
         >
           {#each users as user (user.id)}
-            <Segment.Item value={user.id}>{user.name}</Segment.Item>
+            <Segment.Item labelClasses="text-base" value={user.id}
+              >{get_string_trimmed(user.name)}</Segment.Item
+            >
           {/each}
         </Segment>
+        <div class="mt-2">
+          {#if user}
+            {user.name}
+          {/if}
+        </div>
       </div>
     {/snippet}
   </Tabs>
