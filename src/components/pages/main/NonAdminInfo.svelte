@@ -3,13 +3,21 @@
   import { createQuery } from '@tanstack/svelte-query';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
 
-  const projects_info = createQuery({
-    queryKey: ['projects_info'],
-    queryFn: async () => {
-      const res = await client.user.user_info.$get();
-      return await res.json();
-    }
-  });
+  let { user_id, admin_edit = false }: { user_id: string; admin_edit?: boolean } = $props();
+
+  const projects_info = $derived(
+    createQuery({
+      queryKey: ['user_info', user_id],
+      queryFn: async () => {
+        const res = await client.user.user_info[`:id`].$get({
+          param: {
+            id: user_id
+          }
+        });
+        return await res.json();
+      }
+    })
+  );
 
   let selected_project_id = $state<string>('');
 
@@ -23,13 +31,17 @@
 {#if !$projects_info.isFetching && $projects_info.isSuccess}
   {@const data = $projects_info.data}
   {#if !data.is_approved}
-    <div class="dark:text-warning-500 text-warning-600">
-      Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
-    </div>
+    {#if !admin_edit}
+      <div class="dark:text-warning-500 text-warning-600">
+        Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
+      </div>
+    {/if}
   {:else}
     {@const projects = data.projects}
     {#if projects.length === 0}
-      <div>You Have not been assigned to any projects yet.</div>
+      {#if !admin_edit}
+        <div>You Have not been assigned to any projects yet.</div>
+      {/if}
     {:else}
       <Tabs bind:value={selected_project_id} base="mt-6">
         {#snippet list()}
@@ -52,7 +64,9 @@
             {/if}
             {@const languages = project.langugaes}
             {#if languages.length === 0}
-              <div class="mt-2">You have not been alloted any Languages to work upon.</div>
+              {#if !admin_edit}
+                <div class="mt-2">You have not been alloted any Languages to work upon.</div>
+              {/if}
             {:else}
               <div class="mt-2">
                 <div class="flex gap-2 text-sm text-slate-600 dark:text-slate-200">
@@ -73,5 +87,5 @@
     {/if}
   {/if}
 {:else}
-  <div class="placeholder h-40 animate-pulse rounded-md"></div>
+  <div class="placeholder h-40 w-full animate-pulse rounded-md"></div>
 {/if}

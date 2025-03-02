@@ -6,18 +6,22 @@ import { language, project, user_project_join, user_project_language_join } from
 import { and, eq } from 'drizzle-orm';
 
 const router = new Hono()
-  .get('/user_info', protectedRoute, async (c) => {
-    const user_info = c.get('user')!;
-    await delay(600);
+  .get('/user_info/:id', protectedRoute, async (c) => {
+    const user_session_info = c.get('user')!;
+    const user_param_id = c.req.param('id');
+    await delay(550);
     const is_approved = (
       await db.query.user_info.findFirst({
         columns: {
           is_approved: true
         },
-        where: ({ id }, { eq }) => eq(id, user_info.id)
+        where: ({ id }, { eq }) => eq(id, user_param_id)
       })
     )?.is_approved;
-    if (user_info.role !== 'user' || !is_approved) {
+    if (
+      (user_session_info.role !== 'admin' && user_session_info.id !== user_param_id) ||
+      !is_approved
+    ) {
       return c.json<
         | { is_approved: false }
         | {
@@ -44,7 +48,7 @@ const router = new Hono()
         project_description: project.description
       })
       .from(user_project_join)
-      .where(eq(user_project_join.user_id, user_info.id))
+      .where(eq(user_project_join.user_id, user_param_id))
       .innerJoin(project, eq(user_project_join.project_id, project.id));
 
     const projects = await Promise.all(
@@ -57,7 +61,7 @@ const router = new Hono()
           .from(user_project_language_join)
           .where(
             and(
-              eq(user_project_language_join.user_id, user_info.id),
+              eq(user_project_language_join.user_id, user_param_id),
               eq(user_project_language_join.project_id, project_info.project_id)
             )
           )

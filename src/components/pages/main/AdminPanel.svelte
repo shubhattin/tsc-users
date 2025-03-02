@@ -2,6 +2,7 @@
   import { client } from '~/api/client';
   import { createQuery } from '@tanstack/svelte-query';
   import { Segment, Tabs } from '@skeletonlabs/skeleton-svelte';
+  import NonAdminInfo from './NonAdminInfo.svelte';
 
   const users_list = createQuery({
     queryKey: ['users_list'],
@@ -30,7 +31,7 @@
     }
   };
 
-  const get_string_trimmed = (str: string, limit: number = 20) => {
+  const get_string_trimmed = (str: string, limit: number = 15) => {
     if (str.length > limit) return str.substring(0, limit) + '...';
     return str;
   };
@@ -63,14 +64,16 @@
             >
           {/each}
         </Segment>
-        <div class="mt-2">
+        <div class="mt-2 w-full">
           {#if user}
-            {user.name}
+            {#if selected_user_type === 'regular'}
+              <NonAdminInfo user_id={user.id} admin_edit={true} />
+            {/if}
           {/if}
         </div>
       </div>
     {/snippet}
   </Tabs>
 {:else}
-  <div class="placeholder h-40 animate-pulse rounded-md"></div>
+  <div class="placeholder h-96 animate-pulse rounded-md"></div>
 {/if}

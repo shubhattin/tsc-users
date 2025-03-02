@@ -7,6 +7,9 @@
   import Icon from '~/tools/Icon.svelte';
   import NonAdminInfo from './NonAdminInfo.svelte';
   import AdminPanel from './AdminPanel.svelte';
+  import { useQueryClient } from '@tanstack/svelte-query';
+
+  const query_client = useQueryClient();
 
   type SessionType = typeof authClient.$Infer.Session;
 
@@ -23,6 +26,16 @@
         }
       }
     });
+  };
+
+  const refresh_data = () => {
+    query_client.invalidateQueries({
+      queryKey: ['user_info']
+    });
+    if (user.role === 'admin')
+      query_client.invalidateQueries({
+        queryKey: ['users_list']
+      });
   };
 </script>
 
@@ -76,11 +89,12 @@
       </Modal>
     {/snippet}
   </Popover>
+  <button class="btn text-sm" onclick={refresh_data}>Refresh</button>
 </div>
 <div class="text-sm text-slate-500 sm:text-base dark:text-slate-400">{user.email}</div>
 <div class="mt-3">
   {#if user.role === 'user'}
-    <NonAdminInfo />
+    <NonAdminInfo user_id={user.id} />
   {:else if user.role === 'admin'}
     <AdminPanel />
   {/if}
