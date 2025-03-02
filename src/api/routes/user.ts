@@ -5,11 +5,14 @@ import { delay } from '~/tools/delay';
 import {
   language,
   project,
+  user,
   user_info,
   user_project_join,
   user_project_language_join
 } from '~/db/schema';
 import { and, eq } from 'drizzle-orm';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 
 const router = new Hono()
   .get('/user_info/:id', protectedRoute, async (c) => {
@@ -118,6 +121,17 @@ const router = new Hono()
       });
     }
     return c.json({ success: true });
-  });
+  })
+  .post(
+    '/edit_name',
+    protectedRoute,
+    zValidator('json', z.object({ name: z.string() })),
+    async (c) => {
+      const user_info = c.get('user')!;
+      const { name } = c.req.valid('json');
+      await db.update(user).set({ name }).where(eq(user.id, user_info.id));
+      return c.json({ success: true });
+    }
+  );
 
 export const user_router = router;

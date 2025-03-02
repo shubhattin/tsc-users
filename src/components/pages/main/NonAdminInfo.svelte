@@ -3,6 +3,7 @@
   import { createQuery, useQueryClient } from '@tanstack/svelte-query';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
   import ConfirmPopover from '~/components/PopoverModals/ConfirmPopover.svelte';
+  import { selected_user_type } from '~/state/main';
 
   const query_client = useQueryClient();
 
@@ -52,6 +53,8 @@
       query_client.invalidateQueries({
         queryKey: ['users_list']
       });
+      $selected_user_type = 'regular';
+      // $selected_user_id = user_info.id;
     }
   };
 </script>
@@ -91,6 +94,8 @@
     {#if projects.length === 0}
       {#if !admin_edit}
         <div>You Have not been assigned to any projects yet.</div>
+      {:else}
+        <div class="mt-2 text-sm">No Projects Alloted to this user</div>
       {/if}
     {:else}
       <Tabs bind:value={selected_project_id} base={!admin_edit ? 'mt-6' : 'mt-3'}>

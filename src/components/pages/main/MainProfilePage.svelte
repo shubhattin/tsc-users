@@ -30,14 +30,16 @@
     });
   };
 
-  const refresh_data = () => {
-    query_client.invalidateQueries({
-      queryKey: ['user_info']
-    });
-    if (user.role === 'admin')
+  const refresh_data = async () => {
+    await Promise.all([
       query_client.invalidateQueries({
-        queryKey: ['users_list']
-      });
+        queryKey: ['user_info']
+      }),
+      user.role === 'admin' &&
+        query_client.invalidateQueries({
+          queryKey: ['users_list']
+        })
+    ]);
   };
 
   const user_info_is_fetching = useIsFetching({
