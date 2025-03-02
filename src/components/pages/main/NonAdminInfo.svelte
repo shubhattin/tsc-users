@@ -7,6 +7,7 @@
   import { BsPlusLg } from 'svelte-icons-pack/bs';
   import { cl_join } from '~/tools/cl_join';
   import { Popover } from '@skeletonlabs/skeleton-svelte';
+  import { CgClose } from 'svelte-icons-pack/cg';
 
   const query_client = useQueryClient();
 
@@ -75,6 +76,20 @@
       exact: true
     });
   };
+
+  let approve_remove_project_popup = $state(false);
+
+  const project_remove = async (project_id: number) => {
+    approve_remove_project_popup = false;
+    const res = await client.project.remove_from_project.$post({
+      json: { user_id: user_info.id, project_id }
+    });
+    if (!res.ok) return;
+    query_client.invalidateQueries({
+      queryKey: ['user_info', user_info.id],
+      exact: true
+    });
+  };
 </script>
 
 {#if !$projects_info.isFetching && $projects_info.isSuccess}
@@ -129,6 +144,20 @@
           </select>
         </label>
         {@render add_project()}
+        <ConfirmPopover
+          bind:popup_state={approve_remove_project_popup}
+          confirm_func={() => {
+            approve_remove_project_popup = false;
+            project_remove(project!.project_id);
+          }}
+          placement="bottom"
+          description="Sure to unassign this Project ?"
+          class="text-sm"
+        >
+          <span class="ml-2 hover:text-red-600 dark:hover:text-red-500">
+            <Icon src={CgClose} class="text-xl" />
+          </span>
+        </ConfirmPopover>
       </div>
       {@const project = projects.find(
         (project) => project.project_id.toString() === selected_project_id
@@ -169,7 +198,7 @@
   {#if $project_list.isSuccess && $projects_info.data!.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
     <Popover
       bind:open={add_project_popup}
-      positioning={{ placement: 'bottom' }}
+      positioning={{ placement: new_list ? 'right' : 'bottom' }}
       arrow={false}
       contentBase="card z-50 space-y-1 sm:space-y-1.5 rounded-lg px-2 py-1 shadow-xl bg-surface-100-900"
       triggerBase="ml-1"
@@ -190,22 +219,21 @@
       {#snippet content()}
         {#each $project_list.data as project}
           {#if $projects_info.data!.is_approved && !$projects_info.data!.projects.find((p) => p.project_id === project.id)}
-            <ConfirmPopover
-              bind:popup_state={approve_add_project_popup}
-              confirm_func={() => {
-                approve_add_project_popup = false;
-                add_project_for_user(project.id);
-              }}
-              placement="bottom"
-              description={`Are you sure you want this user to '${project.name}' project ?`}
-              class="text-sm"
-            >
-              <button
-                class="btn block w-full gap-1 space-x-1 rounded-md px-1 py-0 hover:bg-gray-200 dark:hover:bg-gray-700"
+            <div class="block w-full">
+              <ConfirmPopover
+                bind:popup_state={approve_add_project_popup}
+                confirm_func={() => {
+                  approve_add_project_popup = false;
+                  add_project_for_user(project.id);
+                }}
+                placement="bottom"
+                description={`Are you sure you want this user to '${project.name}' project ?`}
+                class="text-sm"
+                triggerBase="btn block w-full gap-1 space-x-1 rounded-md px-1 py-0 text-center hover:bg-gray-200 dark:hover:bg-gray-700"
               >
                 {project.name}
-              </button>
-            </ConfirmPopover>
+              </ConfirmPopover>
+            </div>
           {/if}
         {/each}
       {/snippet}

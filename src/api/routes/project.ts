@@ -1,15 +1,8 @@
 import { Hono } from 'hono';
-import { protectedAdminRoute, protectedRoute } from '../context';
+import { protectedAdminRoute } from '../context';
 import { db } from '~/db/db';
 import { delay } from '~/tools/delay';
-import {
-  language,
-  project,
-  user,
-  user_info,
-  user_project_join,
-  user_project_language_join
-} from '~/db/schema';
+import { user_project_join, user_project_language_join } from '~/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
@@ -35,10 +28,46 @@ const router = new Hono()
     ),
     async (c) => {
       const { user_id, project_id } = c.req.valid('json');
+      await delay(400);
       await db.insert(user_project_join).values({
         user_id,
         project_id
       });
+
+      return c.json({ success: true });
+    }
+  )
+  .post(
+    '/remove_from_project',
+    protectedAdminRoute,
+    zValidator(
+      'json',
+      z.object({
+        user_id: z.string(),
+        project_id: z.number().int()
+      })
+    ),
+    async (c) => {
+      const { user_id, project_id } = c.req.valid('json');
+      await Promise.all([
+        db
+          .delete(user_project_join)
+          .where(
+            and(
+              eq(user_project_join.user_id, user_id),
+              eq(user_project_join.project_id, project_id)
+            )
+          ),
+        // deleting the user project language assigned as well
+        db
+          .delete(user_project_language_join)
+          .where(
+            and(
+              eq(user_project_language_join.user_id, user_id),
+              eq(user_project_language_join.project_id, project_id)
+            )
+          )
+      ]);
 
       return c.json({ success: true });
     }

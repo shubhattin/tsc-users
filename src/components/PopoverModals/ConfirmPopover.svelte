@@ -12,7 +12,8 @@
     confirm_func,
     contentBase,
     placement,
-    class: className
+    class: className,
+    triggerBase
   }: {
     children: Snippet;
     confirm_func?: () => void;
@@ -22,6 +23,7 @@
     contentBase?: string;
     placement: Placement;
     class?: string;
+    triggerBase?: string;
   } = $props();
 </script>
 
@@ -33,6 +35,7 @@
     'card z-70 space-y-2 p-2 rounded-lg shadow-xl bg-surface-100-900',
     contentBase
   )}
+  triggerBase={cl_join(triggerBase)}
 >
   {#snippet trigger()}
     {@render children()}
