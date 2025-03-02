@@ -25,7 +25,7 @@
     if (selected_user_type === 'admin') {
       return users.filter((user) => user.role === 'admin');
     } else if (selected_user_type === 'regular') {
-      return users.filter((user) => user.role === 'user');
+      return users.filter((user) => user.role === 'user' && user.user_info?.is_approved);
     } else if (selected_user_type === 'unapproved') {
       return users.filter((user) => !user.user_info?.is_approved);
     }
@@ -42,7 +42,7 @@
     {#snippet list()}
       <Tabs.Control labelClasses="rounded-md font-semibold" value="admin">Admin</Tabs.Control>
       <Tabs.Control labelClasses="rounded-md font-semibold" value="regular">Regular</Tabs.Control>
-      <Tabs.Control labelClasses="rounded-md font-semibold" value="unapproved"
+      <Tabs.Control labelClasses="rounded-md font-semibold text-sm" value="unapproved"
         >Unapproved</Tabs.Control
       >
     {/snippet}
@@ -64,10 +64,18 @@
             >
           {/each}
         </Segment>
-        <div class="mt-2 w-full">
+        <div class="mt-2 ml-0 w-full sm:ml-2">
           {#if user}
-            {#if selected_user_type === 'regular'}
-              <NonAdminInfo user_id={user.id} admin_edit={true} />
+            {#if selected_user_type === 'regular' || selected_user_type === 'unapproved'}
+              <NonAdminInfo
+                user_info={{
+                  id: user.id,
+                  name: user.name,
+                  email: user.email,
+                  role: user.role
+                }}
+                admin_edit={true}
+              />
             {/if}
           {/if}
         </div>

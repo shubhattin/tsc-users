@@ -28,7 +28,7 @@
   positioning={{ placement: placement }}
   arrow={false}
   contentBase={cl_join(
-    'card z-50 space-y-2 p-2 rounded-lg shadow-xl bg-surface-100-900',
+    'card z-70 space-y-2 p-2 rounded-lg shadow-xl bg-surface-100-900',
     contentBase
   )}
 >

@@ -1,17 +1,26 @@
 <script lang="ts">
   import { client } from '~/api/client';
-  import { createQuery } from '@tanstack/svelte-query';
+  import { createQuery, useQueryClient } from '@tanstack/svelte-query';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
+  import ConfirmPopover from '~/components/PopoverModals/ConfirmPopover.svelte';
 
-  let { user_id, admin_edit = false }: { user_id: string; admin_edit?: boolean } = $props();
+  const query_client = useQueryClient();
+
+  let {
+    user_info,
+    admin_edit = false
+  }: {
+    user_info: { id: string; name: string; email: string; role: string | null };
+    admin_edit?: boolean;
+  } = $props();
 
   const projects_info = $derived(
     createQuery({
-      queryKey: ['user_info', user_id],
+      queryKey: ['user_info', user_info.id],
       queryFn: async () => {
         const res = await client.user.user_info[`:id`].$get({
           param: {
-            id: user_id
+            id: user_info.id
           }
         });
         return await res.json();
@@ -26,15 +35,56 @@
     if (!$projects_info.data?.is_approved || $projects_info.data?.projects.length === 0) return;
     selected_project_id = $projects_info.data!.projects[0]?.project_id.toString();
   });
+
+  let approve_popup_state = $state(false);
+
+  const approve_user_func = async () => {
+    $projects_info.refetch();
+    const req = await client.user.approve[':id'].$post({
+      param: {
+        id: user_info.id
+      }
+    });
+    if (req.ok) {
+      query_client.invalidateQueries({
+        queryKey: ['user_info', user_info.id]
+      });
+      query_client.invalidateQueries({
+        queryKey: ['users_list']
+      });
+    }
+  };
 </script>
 
 {#if !$projects_info.isFetching && $projects_info.isSuccess}
   {@const data = $projects_info.data}
+  {#if admin_edit}
+    <div class="text-base font-semibold">{user_info.name}</div>
+    <a
+      class="text-xs text-slate-500 sm:text-sm dark:text-slate-400"
+      href={`emailto:${user_info.email}`}>{user_info.email}</a
+    >
+  {/if}
   {#if !data.is_approved}
     {#if !admin_edit}
       <div class="dark:text-warning-500 text-warning-600">
         Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
       </div>
+    {:else}
+      <div class="dark:text-warning-500 text-warning-600 mt-2">
+        This account has not been Approved.
+      </div>
+      <ConfirmPopover
+        bind:popup_state={approve_popup_state}
+        confirm_func={() => {
+          approve_popup_state = false;
+          approve_user_func();
+        }}
+        placement="right"
+        description="Sure to Approve this User ?"
+      >
+        <span class="btn bg-primary-500 mt-1.5 px-1 py-0 text-sm font-bold">Approve</span>
+      </ConfirmPopover>
     {/if}
   {:else}
     {@const projects = data.projects}
@@ -43,7 +93,7 @@
         <div>You Have not been assigned to any projects yet.</div>
       {/if}
     {:else}
-      <Tabs bind:value={selected_project_id} base="mt-6">
+      <Tabs bind:value={selected_project_id} base={!admin_edit ? 'mt-6' : 'mt-3'}>
         {#snippet list()}
           {#each projects as project (project.project_id)}
             <Tabs.Control

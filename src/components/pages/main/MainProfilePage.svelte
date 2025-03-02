@@ -7,7 +7,9 @@
   import Icon from '~/tools/Icon.svelte';
   import NonAdminInfo from './NonAdminInfo.svelte';
   import AdminPanel from './AdminPanel.svelte';
-  import { useQueryClient } from '@tanstack/svelte-query';
+  import { useQueryClient, useIsFetching } from '@tanstack/svelte-query';
+  import { LuRefreshCw } from 'svelte-icons-pack/lu';
+  import { cl_join } from '~/tools/cl_join';
 
   const query_client = useQueryClient();
 
@@ -37,6 +39,17 @@
         queryKey: ['users_list']
       });
   };
+
+  const user_info_is_fetching = useIsFetching({
+    queryKey: ['user_info']
+  });
+  const users_list_is_fetching = useIsFetching({
+    queryKey: ['users_list']
+  });
+
+  let is_fetching = $derived(
+    user.role === 'admin' ? !!$users_list_is_fetching : !!$user_info_is_fetching
+  );
 </script>
 
 <div>
@@ -52,13 +65,13 @@
       <span
         class="rounded-full outline-hidden select-none hover:text-gray-500 dark:hover:text-gray-400"
       >
-        <Icon src={CgMenuGridO} class="text-xl" />
+        <Icon src={CgMenuGridO} class="text-2xl" />
       </span>
     {/snippet}
     {#snippet content()}
       <Modal
         bind:open={logout_modal_status}
-        contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
+        contentBase="card z-60 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
         backdropBackground="backdrop-blur-xs"
       >
         {#snippet trigger()}
@@ -89,12 +102,30 @@
       </Modal>
     {/snippet}
   </Popover>
-  <button class="btn text-sm" onclick={refresh_data}>Refresh</button>
+  <button
+    class={cl_join(
+      'btn m-0 ml-3 p-0 text-sm outline-hidden select-none hover:text-gray-500 sm:ml-4 dark:hover:text-gray-400',
+      is_fetching && 'animate-spin'
+    )}
+    onclick={refresh_data}
+    disabled={is_fetching}
+  >
+    <Icon src={LuRefreshCw} class="text-lg" />
+  </button>
 </div>
-<div class="text-sm text-slate-500 sm:text-base dark:text-slate-400">{user.email}</div>
+<a class="text-sm text-slate-500 sm:text-base dark:text-slate-400" href={`emailto:${user.email}`}
+  >{user.email}</a
+>
 <div class="mt-3">
   {#if user.role === 'user'}
-    <NonAdminInfo user_id={user.id} />
+    <NonAdminInfo
+      user_info={{
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }}
+    />
   {:else if user.role === 'admin'}
     <AdminPanel />
   {/if}

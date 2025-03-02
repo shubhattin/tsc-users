@@ -2,7 +2,13 @@ import { Hono } from 'hono';
 import { protectedAdminRoute, protectedRoute } from '../context';
 import { db } from '~/db/db';
 import { delay } from '~/tools/delay';
-import { language, project, user_project_join, user_project_language_join } from '~/db/schema';
+import {
+  language,
+  project,
+  user_info,
+  user_project_join,
+  user_project_language_join
+} from '~/db/schema';
 import { and, eq } from 'drizzle-orm';
 
 const router = new Hono()
@@ -97,6 +103,21 @@ const router = new Hono()
       where: ({ id }, { ne }) => ne(id, user_session_info.id)
     });
     return c.json(users);
+  })
+  .post('/approve/:id', protectedAdminRoute, async (c) => {
+    const user_id = c.req.param('id');
+    const user_exists = await db.query.user_info.findFirst({
+      where: ({ id }, { eq }) => eq(id, user_id)
+    });
+    if (user_exists) {
+      await db.update(user_info).set({ is_approved: true }).where(eq(user_info.id, user_id));
+    } else {
+      await db.insert(user_info).values({
+        id: user_id,
+        is_approved: true
+      });
+    }
+    return c.json({ success: true });
   });
 
 export const user_router = router;
