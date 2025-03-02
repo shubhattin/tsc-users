@@ -2,7 +2,6 @@
   import { client } from '~/api/client';
   import { createQuery } from '@tanstack/svelte-query';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
-  import { project } from '~/db/schema';
 
   const projects_info = createQuery({
     queryKey: ['projects_info'],
@@ -56,11 +55,11 @@
               <div class="mt-2">You have not been alloted any Languages to work upon.</div>
             {:else}
               <div class="mt-2">
-                <div class="flex gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <div class="flex gap-2 text-sm text-slate-600 dark:text-slate-200">
                   <div>Languages</div>
                   <div class="flex gap-2">
                     {#each languages as language}
-                      <div class="bg-surface-200 dark:bg-surface-700 rounded-md px-2 py-1 text-xs">
+                      <div class="rounded-md bg-zinc-200 px-2 py-1 text-xs dark:bg-slate-700">
                         {language.lang_name}
                       </div>
                     {/each}

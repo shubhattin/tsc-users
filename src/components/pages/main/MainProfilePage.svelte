@@ -6,6 +6,7 @@
   import { signOut, authClient } from '~/lib/auth-client';
   import Icon from '~/tools/Icon.svelte';
   import NonAdminInfo from './NonAdminInfo.svelte';
+  import AdminPanel from './AdminPanel.svelte';
 
   type SessionType = typeof authClient.$Infer.Session;
 
@@ -80,5 +81,7 @@
 <div class="mt-3">
   {#if user.role === 'user'}
     <NonAdminInfo />
+  {:else if user.role === 'admin'}
+    <AdminPanel />
   {/if}
 </div>
