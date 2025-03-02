@@ -15,13 +15,33 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 
 const router = new Hono()
-  .get('/list_projects', protectedAdminRoute, async (e) => {
+  .get('/list_projects', protectedAdminRoute, async (c) => {
     const projects = await db.query.project.findMany();
-    return e.json(projects);
+    return c.json(projects);
   })
-  .get('/list_languages', protectedAdminRoute, async (e) => {
+  .get('/list_languages', protectedAdminRoute, async (c) => {
     const languages = await db.query.language.findMany();
-    return e.json(languages);
-  });
+    return c.json(languages);
+  })
+  .post(
+    '/add_to_project',
+    protectedAdminRoute,
+    zValidator(
+      'json',
+      z.object({
+        user_id: z.string(),
+        project_id: z.number().int()
+      })
+    ),
+    async (c) => {
+      const { user_id, project_id } = c.req.valid('json');
+      await db.insert(user_project_join).values({
+        user_id,
+        project_id
+      });
+
+      return c.json({ success: true });
+    }
+  );
 
 export const project_router = router;

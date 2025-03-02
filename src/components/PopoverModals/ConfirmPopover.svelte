@@ -11,7 +11,8 @@
     cancel_func,
     confirm_func,
     contentBase,
-    placement
+    placement,
+    class: className
   }: {
     children: Snippet;
     confirm_func?: () => void;
@@ -20,6 +21,7 @@
     popup_state: boolean;
     contentBase?: string;
     placement: Placement;
+    class?: string;
   } = $props();
 </script>
 
@@ -36,10 +38,10 @@
     {@render children()}
   {/snippet}
   {#snippet content()}
-    <div class="text-lg font-bold">{description}</div>
+    <div class={cl_join('text-lg font-bold', className)}>{description}</div>
     <div class="space-x-2">
       <button
-        class="btn preset-filled-surface-300-700 rounded-lg font-semibold"
+        class={cl_join('btn preset-filled-surface-300-700 rounded-lg font-semibold', className)}
         onclick={confirm_func}
       >
         Confirm
@@ -49,7 +51,7 @@
           popup_state = false;
           cancel_func && cancel_func();
         }}
-        class="btn preset-outlined-surface-800-200 rounded-lg font-semibold"
+        class={cl_join('btn preset-outline-surface-800-200 rounded-lg font-semibold', className)}
       >
         Cancel
       </button>

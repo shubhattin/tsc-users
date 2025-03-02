@@ -1,9 +1,12 @@
 <script lang="ts">
   import { client } from '~/api/client';
   import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-  import { Tabs } from '@skeletonlabs/skeleton-svelte';
   import ConfirmPopover from '~/components/PopoverModals/ConfirmPopover.svelte';
-  import { selected_user_type } from '~/state/main';
+  import { project_list, selected_user_type } from '~/state/main';
+  import Icon from '~/tools/Icon.svelte';
+  import { BsPlusLg } from 'svelte-icons-pack/bs';
+  import { cl_join } from '~/tools/cl_join';
+  import { Popover } from '@skeletonlabs/skeleton-svelte';
 
   const query_client = useQueryClient();
 
@@ -57,6 +60,21 @@
       // $selected_user_id = user_info.id;
     }
   };
+
+  let add_project_popup = $state(false);
+  let approve_add_project_popup = $state(false);
+
+  const add_project_for_user = async (project_id: number) => {
+    add_project_popup = false;
+    const res = await client.project.add_to_project.$post({
+      json: { user_id: user_info.id, project_id }
+    });
+    if (!res.ok) return;
+    query_client.invalidateQueries({
+      queryKey: ['user_info', user_info.id],
+      exact: true
+    });
+  };
 </script>
 
 {#if !$projects_info.isFetching && $projects_info.isSuccess}
@@ -96,51 +114,101 @@
         <div>You Have not been assigned to any projects yet.</div>
       {:else}
         <div class="mt-2 text-sm">No Projects Alloted to this user</div>
+        <div class="mt-2.5">
+          {@render add_project(true)}
+        </div>
       {/if}
     {:else}
-      <Tabs bind:value={selected_project_id} base={!admin_edit ? 'mt-6' : 'mt-3'}>
-        {#snippet list()}
-          {#each projects as project (project.project_id)}
-            <Tabs.Control
-              labelClasses="rounded-md font-semibold"
-              value={project.project_id.toString()}>{project.project_name}</Tabs.Control
-            >
-          {/each}
-        {/snippet}
-        {#snippet content()}
-          {@const project = projects.find(
-            (project) => project.project_id.toString() === selected_project_id
-          )}
-          {#if project}
-            {#if project.project_description}
-              <div class="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                {project.project_description}
-              </div>
-            {/if}
-            {@const languages = project.langugaes}
-            {#if languages.length === 0}
-              {#if !admin_edit}
-                <div class="mt-2">You have not been alloted any Languages to work upon.</div>
-              {/if}
-            {:else}
-              <div class="mt-2">
-                <div class="flex gap-2 text-sm text-slate-600 dark:text-slate-200">
-                  <div>Languages</div>
-                  <div class="flex gap-2">
-                    {#each languages as language}
-                      <div class="rounded-md bg-zinc-200 px-2 py-1 text-xs dark:bg-slate-700">
-                        {language.lang_name}
-                      </div>
-                    {/each}
-                  </div>
-                </div>
-              </div>
-            {/if}
+      <div class="mt-2.5">
+        <label class="inline-block">
+          <span class="label-text font-semibold">Project</span>
+          <select bind:value={selected_project_id} class="select w-56 text-sm sm:w-60">
+            {#each projects as project}
+              <option value={project.project_id.toString()}>{project.project_name}</option>
+            {/each}
+          </select>
+        </label>
+        {@render add_project()}
+      </div>
+      {@const project = projects.find(
+        (project) => project.project_id.toString() === selected_project_id
+      )}
+      {#if project}
+        {#if project.project_description}
+          <div class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            {project.project_description}
+          </div>
+        {/if}
+        {@const languages = project.langugaes}
+        {#if languages.length === 0}
+          {#if !admin_edit}
+            <div class="mt-2">You have not been alloted any Languages to work upon.</div>
           {/if}
-        {/snippet}
-      </Tabs>
+        {:else}
+          <div class="mt-2">
+            <div class="flex gap-2 text-sm text-slate-600 dark:text-slate-200">
+              <div>Languages</div>
+              <div class="flex gap-2">
+                {#each languages as language}
+                  <div class="rounded-md bg-zinc-200 px-2 py-1 text-xs dark:bg-slate-700">
+                    {language.lang_name}
+                  </div>
+                {/each}
+              </div>
+            </div>
+          </div>
+        {/if}
+      {/if}
     {/if}
   {/if}
 {:else}
   <div class="placeholder h-40 w-full animate-pulse rounded-md"></div>
 {/if}
+
+{#snippet add_project(new_list = false)}
+  {#if $project_list.isSuccess && $projects_info.data!.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
+    <Popover
+      bind:open={add_project_popup}
+      positioning={{ placement: 'bottom' }}
+      arrow={false}
+      contentBase="card z-50 space-y-1 sm:space-y-1.5 rounded-lg px-2 py-1 shadow-xl bg-surface-100-900"
+      triggerBase="ml-1"
+    >
+      {#snippet trigger()}
+        <span
+          class={cl_join(
+            'dark:bg-primary-600 bg-primary-500 gap-1 rounded-md px-1 py-1 font-semibold text-white',
+            new_list && 'px-2'
+          )}
+        >
+          <Icon src={BsPlusLg} class="text-xl" />
+          {#if new_list}
+            Add Project
+          {/if}
+        </span>
+      {/snippet}
+      {#snippet content()}
+        {#each $project_list.data as project}
+          {#if $projects_info.data!.is_approved && !$projects_info.data!.projects.find((p) => p.project_id === project.id)}
+            <ConfirmPopover
+              bind:popup_state={approve_add_project_popup}
+              confirm_func={() => {
+                approve_add_project_popup = false;
+                add_project_for_user(project.id);
+              }}
+              placement="bottom"
+              description={`Are you sure you want this user to '${project.name}' project ?`}
+              class="text-sm"
+            >
+              <button
+                class="btn block w-full gap-1 space-x-1 rounded-md px-1 py-0 hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                {project.name}
+              </button>
+            </ConfirmPopover>
+          {/if}
+        {/each}
+      {/snippet}
+    </Popover>
+  {/if}
+{/snippet}
