@@ -71,6 +71,56 @@ const router = new Hono()
 
       return c.json({ success: true });
     }
+  )
+  .post(
+    '/update_project_languages',
+    protectedAdminRoute,
+    zValidator(
+      'json',
+      z.object({
+        user_id: z.string(),
+        project_id: z.number().int(),
+        languages_id: z.number().int().array()
+      })
+    ),
+    async (c) => {
+      const { user_id, project_id, languages_id } = c.req.valid('json');
+      await delay(400);
+      const languages_current = await db.query.user_project_language_join.findMany({
+        where: (tbl, { and, eq }) => and(eq(tbl.user_id, user_id), eq(tbl.project_id, project_id)),
+        columns: {
+          language_id: true
+        }
+      });
+      await Promise.allSettled([
+        // deleting
+        ...languages_current.map((lang) => {
+          const exists = languages_id.find((id) => id === lang.language_id);
+          if (!exists)
+            return db
+              .delete(user_project_language_join)
+              .where(
+                and(
+                  eq(user_project_language_join.user_id, user_id),
+                  eq(user_project_language_join.project_id, project_id),
+                  eq(user_project_language_join.language_id, lang.language_id)
+                )
+              );
+        }),
+        // inserting
+        ...languages_id.map((lang_id) => {
+          const exists = languages_current.find((lang) => lang.language_id === lang_id);
+          if (!exists)
+            return db.insert(user_project_language_join).values({
+              user_id,
+              project_id,
+              language_id: lang_id
+            });
+        })
+      ]);
+
+      return c.json({ success: true });
+    }
   );
 
 export const project_router = router;

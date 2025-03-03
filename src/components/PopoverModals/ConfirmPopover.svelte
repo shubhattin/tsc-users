@@ -44,7 +44,10 @@
     <div class={cl_join('text-lg font-bold', className)}>{description}</div>
     <div class="space-x-2">
       <button
-        class={cl_join('btn preset-filled-surface-300-700 rounded-lg font-semibold', className)}
+        class={cl_join(
+          'btn bg-surface-200 dark:bg-surface-700 rounded-lg font-semibold',
+          className
+        )}
         onclick={confirm_func}
       >
         Confirm
