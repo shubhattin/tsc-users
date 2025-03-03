@@ -25,7 +25,7 @@
     } else if ($selected_user_type === 'regular') {
       return users.filter((user) => user.role === 'user' && user.user_info?.is_approved);
     } else if ($selected_user_type === 'unapproved') {
-      return users.filter((user) => !user.user_info?.is_approved);
+      return users.filter((user) => user.role !== 'admin' && !user.user_info?.is_approved);
     }
   };
 
