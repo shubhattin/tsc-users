@@ -3,7 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db, redis } from '../db/db';
 import * as schema from '../db/schema';
 import { env } from '$env/dynamic/private';
-import { admin } from 'better-auth/plugins';
+import { admin, openAPI } from 'better-auth/plugins';
 import { COOKIE_CACHE_TIME_MS } from './cache-time';
 
 export const auth = betterAuth({
@@ -21,7 +21,8 @@ export const auth = betterAuth({
     // }),
     // we do we have it enabled but we are not using username auth now
     // to keep it simple its google auth only for now
-    admin()
+    admin(),
+    ...(import.meta.env.DEV ? [openAPI()] : [])
   ],
   session: {
     cookieCache: {
@@ -52,5 +53,7 @@ export const auth = betterAuth({
       clientId: env.GOOGLE_CLIENT_ID!,
       clientSecret: env.GOOGLE_CLIENT_SECRET!
     }
-  }
+  },
+  // advanced: {},
+  trustedOrigins: import.meta.env.DEV ? ['http://localhost:5173'] : []
 });

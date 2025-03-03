@@ -86,6 +86,55 @@ const router = new Hono()
       projects
     });
   })
+  .get('/user_info/:id/:project_id', protectedRoute, async (c) => {
+    const user_session_info = c.get('user')!;
+    const user_param_id = c.req.param('id');
+    const project_id = z.number().int().parse(c.req.param('project_id'));
+    await delay(550);
+    const is_approved = (
+      await db.query.user_info.findFirst({
+        columns: {
+          is_approved: true
+        },
+        where: ({ id }, { eq }) => eq(id, user_param_id)
+      })
+    )?.is_approved;
+    if (
+      (user_session_info.role !== 'admin' && user_session_info.id !== user_param_id) ||
+      !is_approved
+    ) {
+      return c.json<
+        | { is_approved: false }
+        | {
+            is_approved: true;
+            langugaes: {
+              lang_id: number;
+              lang_name: string;
+            };
+          }
+      >({
+        is_approved: false
+      });
+    }
+    const langugaes = await db
+      .select({
+        lang_id: language.id,
+        lang_name: language.name
+      })
+      .from(user_project_language_join)
+      .where(
+        and(
+          eq(user_project_language_join.user_id, user_param_id),
+          eq(user_project_language_join.project_id, project_id)
+        )
+      )
+      .innerJoin(language, eq(user_project_language_join.language_id, language.id));
+
+    return c.json({
+      is_approved: true,
+      langugaes
+    });
+  })
   .get('/list_users', protectedAdminRoute, async (c) => {
     const user_session_info = c.get('user')!;
     await delay(550);
