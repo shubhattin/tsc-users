@@ -122,6 +122,12 @@ const router = new Hono()
     }
     return c.json({ success: true });
   })
+  .post('/remove/:id', protectedAdminRoute, async (c) => {
+    const user_id = c.req.param('id');
+    await db.delete(user).where(eq(user.id, user_id));
+
+    return c.json({ success: true });
+  })
   .post(
     '/edit_name',
     protectedRoute,

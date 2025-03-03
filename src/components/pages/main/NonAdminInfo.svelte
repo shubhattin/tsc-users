@@ -2,9 +2,9 @@
   import { client } from '~/api/client';
   import { createQuery, useQueryClient } from '@tanstack/svelte-query';
   import ConfirmPopover from '~/components/PopoverModals/ConfirmPopover.svelte';
-  import { language_list, project_list, selected_user_type } from '~/state/main';
+  import { language_list, project_list, selected_user_id, selected_user_type } from '~/state/main';
   import Icon from '~/tools/Icon.svelte';
-  import { BsPlusLg } from 'svelte-icons-pack/bs';
+  import { BsCheckLg, BsPlusLg } from 'svelte-icons-pack/bs';
   import { cl_join } from '~/tools/cl_join';
   import { Popover } from '@skeletonlabs/skeleton-svelte';
   import { CgClose } from 'svelte-icons-pack/cg';
@@ -43,12 +43,13 @@
     if (!selected_project_id || selected_project_id === '') return;
     const data = $projects_info.data;
     if (!data.is_approved) return;
+    selected_langs_ids = [];
     const languages = data!.projects.find(
       (p) => p.project_id === parseInt(selected_project_id)
     )?.langugaes;
     if (languages) {
       selected_langs_ids = languages.map((l) => l.lang_id);
-    } else selected_langs_ids = [];
+    }
   });
 
   let selected_project_id = $state<string>('');
@@ -78,6 +79,20 @@
       $selected_user_type = 'regular';
       // $selected_user_id = user_info.id;
     }
+  };
+
+  let remove_user_popup = $state(false);
+
+  const remove_user_func = async () => {
+    remove_user_popup = false;
+    const res = await client.user.remove[':id'].$post({
+      param: { id: user_info.id }
+    });
+    if (!res.ok) return;
+    query_client.invalidateQueries({
+      queryKey: ['users_list']
+    });
+    $selected_user_id = null;
   };
 
   let add_project_popup = $state(false);
@@ -138,17 +153,40 @@
       <div class="dark:text-warning-500 text-warning-600 mt-2">
         This account has not been Approved.
       </div>
-      <ConfirmPopover
-        bind:popup_state={approve_popup_state}
-        confirm_func={() => {
-          approve_popup_state = false;
-          approve_user_func();
-        }}
-        placement="right"
-        description="Sure to Approve this User ?"
-      >
-        <span class="btn bg-primary-500 mt-1.5 px-1 py-0 text-sm font-bold">Approve</span>
-      </ConfirmPopover>
+      <div class="space-x-2">
+        <ConfirmPopover
+          bind:popup_state={approve_popup_state}
+          confirm_func={() => {
+            approve_popup_state = false;
+            approve_user_func();
+          }}
+          placement="right"
+          description="Sure to Approve this User ?"
+        >
+          <span
+            class="btn dark:bg-primary-600 bg-primary-500 mt-1.5 gap-1 px-1.5 py-0 text-sm font-bold text-white"
+          >
+            <Icon src={BsCheckLg} class="text-xl" />
+            Approve
+          </span>
+        </ConfirmPopover>
+        <ConfirmPopover
+          bind:popup_state={remove_user_popup}
+          confirm_func={() => {
+            remove_user_popup = false;
+            remove_user_func();
+          }}
+          placement="right"
+          description="Sure to Remove this User ?"
+        >
+          <span
+            class="btn mt-1.5 gap-1 bg-rose-500 px-1.5 py-0 text-sm font-bold text-white dark:bg-rose-600"
+          >
+            <Icon src={CgClose} class="text-xl" />
+            Remove
+          </span>
+        </ConfirmPopover>
+      </div>
     {/if}
   {:else}
     {@const projects = data.projects}
