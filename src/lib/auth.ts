@@ -3,8 +3,19 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db, redis } from '../db/db';
 import * as schema from '../db/schema';
 import { env } from '$env/dynamic/private';
-import { admin } from 'better-auth/plugins';
+import { admin, openAPI } from 'better-auth/plugins';
 import { COOKIE_CACHE_TIME_MS } from './cache-time';
+
+export const ALLOWRD_ORIGINS = (() => {
+  if (import.meta.env.DEV) return ['http://localhost:5173'];
+  const list: string[] = [];
+  if (env.AUTH_DOMAIN && env.AUTH_DOMAIN_SITES)
+    for (let site of env.AUTH_DOMAIN_SITES.split(','))
+      list.push(`https://${site}.${env.AUTH_DOMAIN}`);
+  if (env.AUTH_NETLIFY_SITES)
+    for (let site of env.AUTH_NETLIFY_SITES.split(',')) list.push(`https://${site}.netlify.app`);
+  return list;
+})();
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -21,7 +32,8 @@ export const auth = betterAuth({
     // }),
     // we do we have it enabled but we are not using username auth now
     // to keep it simple its google auth only for now
-    admin()
+    admin(),
+    ...(import.meta.env.DEV ? [openAPI()] : [])
   ],
   session: {
     cookieCache: {
@@ -52,5 +64,22 @@ export const auth = betterAuth({
       clientId: env.GOOGLE_CLIENT_ID!,
       clientSecret: env.GOOGLE_CLIENT_SECRET!
     }
-  }
+  },
+  advanced: {
+    ...(env.AUTH_DOMAIN
+      ? {
+          crossSubDomainCookies: {
+            enabled: true,
+            domain: `.${env.AUTH_DOMAIN}` // Domain with a leading period
+          },
+          defaultCookieAttributes: {
+            secure: true,
+            httpOnly: true,
+            sameSite: 'none', // Allows CORS-based cookie sharing across subdomains
+            partitioned: true // New browser standards will mandate this for foreign cookies
+          }
+        }
+      : {})
+  },
+  trustedOrigins: ALLOWRD_ORIGINS
 });
