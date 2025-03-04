@@ -65,21 +65,21 @@ export const auth = betterAuth({
       clientSecret: env.GOOGLE_CLIENT_SECRET!
     }
   },
-  // advanced: {
-  //   ...(env.AUTH_DOMAIN
-  //     ? {
-  //         crossSubDomainCookies: {
-  //           enabled: true,
-  //           domain: `.${env.AUTH_DOMAIN}` // Domain with a leading period
-  //         },
-  //         defaultCookieAttributes: {
-  //           secure: true,
-  //           httpOnly: true,
-  //           sameSite: 'none', // Allows CORS-based cookie sharing across subdomains
-  //           partitioned: true // New browser standards will mandate this for foreign cookies
-  //         }
-  //       }
-  //     : {})
-  // },
+  advanced: {
+    ...(env.AUTH_DOMAIN
+      ? {
+          crossSubDomainCookies: {
+            enabled: true,
+            domain: `.${env.AUTH_DOMAIN}` // Domain with a leading period
+          },
+          defaultCookieAttributes: {
+            secure: true,
+            httpOnly: true,
+            sameSite: 'none', // Allows CORS-based cookie sharing across subdomains
+            partitioned: true // New browser standards will mandate this for foreign cookies
+          }
+        }
+      : {})
+  },
   trustedOrigins: ALLOWRD_ORIGINS
 });
