@@ -4,7 +4,7 @@ import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
   // return resolve(event);
-  if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/hono')) {
+  if (event.url.pathname.startsWith('/api/auth') || event.url.pathname.startsWith('/api/ext')) {
     // Required for CORS to work
     if (event.request.method === 'OPTIONS') {
       return new Response(null, {
@@ -19,7 +19,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     }
   }
   const res: Response = await svelteKitHandler({ event, resolve, auth });
-  if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/hono')) {
+  if (event.url.pathname.startsWith('/api/auth') || event.url.pathname.startsWith('/api/ext')) {
     res.headers.append('Access-Control-Allow-Origin', `http://localhost:5173`);
     res.headers.append('Access-Control-Allow-Credentials', 'true');
   }
