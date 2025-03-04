@@ -15,7 +15,8 @@ export const handle: Handle = async ({ event, resolve }) => {
         'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
         'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Allow-Origin': origin
+        'Access-Control-Allow-Origin': origin,
+        Vary: 'Origin'
       }
     });
   }
@@ -23,6 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (IS_CORS_ALLOWED_URL && isAllowedOrigin) {
     res.headers.append('Access-Control-Allow-Origin', origin);
     res.headers.append('Access-Control-Allow-Credentials', 'true');
+    res.headers.append('Vary', 'Origin');
   }
   return res;
 };
