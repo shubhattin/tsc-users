@@ -86,10 +86,10 @@ const router = new Hono()
       projects
     });
   })
-  .get('/user_info/:id/:project_id', protectedRoute, async (c) => {
+  .get('/user_info_project', protectedRoute, async (c) => {
     const user_session_info = c.get('user')!;
-    const user_param_id = c.req.param('id');
-    const project_id = z.number().int().parse(c.req.param('project_id'));
+    const user_param_id = z.string().parse(c.req.query('user_id'));
+    const project_id = z.coerce.number().int().parse(c.req.query('project_id'));
     await delay(550);
     const is_approved = (
       await db.query.user_info.findFirst({
