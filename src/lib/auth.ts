@@ -12,8 +12,6 @@ export const ALLOWRD_ORIGINS = (() => {
   if (env.AUTH_DOMAIN && env.AUTH_DOMAIN_SITES)
     for (let site of env.AUTH_DOMAIN_SITES.split(','))
       list.push(`https://${site}.${env.AUTH_DOMAIN}`);
-  if (env.AUTH_NETLIFY_SITES)
-    for (let site of env.AUTH_NETLIFY_SITES.split(',')) list.push(`https://${site}.netlify.app`);
   return list;
 })();
 
