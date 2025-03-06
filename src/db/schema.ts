@@ -1,20 +1,13 @@
 import { relations } from 'drizzle-orm';
 import { account, user } from './auth-schema';
-import { boolean, pgTable, text, serial, integer, primaryKey } from 'drizzle-orm/pg-core';
+import { pgTable, text, serial, integer, primaryKey } from 'drizzle-orm/pg-core';
 export * from './auth-schema';
-
-export const user_info = pgTable('user_info', {
-  id: text()
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' })
-    .primaryKey(),
-  is_approved: boolean().notNull().default(false)
-});
 
 export const project = pgTable('project', {
   id: serial().primaryKey(),
   name: text().notNull(),
-  description: text()
+  description: text(),
+  url: text()
 });
 
 export const language = pgTable('language', {
@@ -57,16 +50,11 @@ export const user_project_language_join = pgTable(
 
 export const userRelation = relations(user, ({ one, many }) => ({
   accounts: many(account),
-  user_info: one(user_info),
   projects: many(user_project_join)
 }));
 
 export const accountRelation = relations(account, ({ one }) => ({
   user: one(user, { fields: [account.userId], references: [user.id] })
-}));
-
-export const user_infoRelation = relations(user_info, ({ one }) => ({
-  user: one(user, { fields: [user_info.id], references: [user.id] })
 }));
 
 export const projectRelation = relations(project, ({ many }) => ({
