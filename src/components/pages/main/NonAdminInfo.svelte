@@ -9,6 +9,8 @@
   import { Popover } from '@skeletonlabs/skeleton-svelte';
   import { CgClose } from 'svelte-icons-pack/cg';
   import { FiEdit3 } from 'svelte-icons-pack/fi';
+  import { authClient } from '~/lib/auth-client';
+  import { OiLinkExternal16 } from 'svelte-icons-pack/oi';
 
   const query_client = useQueryClient();
 
@@ -16,7 +18,13 @@
     user_info,
     admin_edit = false
   }: {
-    user_info: { id: string; name: string; email: string; role: string | null };
+    user_info: {
+      id: string;
+      name: string;
+      email: string;
+      role?: string | null;
+      is_approved?: boolean | null;
+    };
     admin_edit?: boolean;
   } = $props();
 
@@ -42,7 +50,7 @@
     if (!$projects_info.isSuccess) return;
     if (!selected_project_id || selected_project_id === '') return;
     const data = $projects_info.data;
-    if (!data.is_approved) return;
+    if (!user_info.is_approved) return;
     selected_langs_ids = [];
     const languages = data!.projects.find(
       (p) => p.project_id === parseInt(selected_project_id)
@@ -56,7 +64,8 @@
 
   $effect(() => {
     // select the first project
-    if (!$projects_info.data?.is_approved || $projects_info.data?.projects.length === 0) return;
+    if (!$projects_info.isSuccess) return;
+    if (!user_info.is_approved || $projects_info.data?.projects.length === 0) return;
     selected_project_id = $projects_info.data!.projects[0]?.project_id.toString();
   });
 
@@ -68,6 +77,9 @@
       param: {
         id: user_info.id
       }
+    });
+    authClient.admin.revokeUserSessions({
+      userId: user_info.id
     });
     if (req.ok) {
       query_client.invalidateQueries({
@@ -144,7 +156,7 @@
       href={`emailto:${user_info.email}`}>{user_info.email}</a
     >
   {/if}
-  {#if !data.is_approved}
+  {#if !user_info.is_approved}
     {#if !admin_edit}
       <div class="dark:text-warning-500 text-warning-600">
         Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
@@ -200,6 +212,9 @@
         </div>
       {/if}
     {:else}
+      {@const cuurent_project = $projects_info.data.projects.find(
+        (p) => p.project_id === parseInt(selected_project_id)
+      )}
       <div class="mt-2.5">
         <label class="inline-block">
           <span class="label-text font-semibold">Project</span>
@@ -225,6 +240,17 @@
               <Icon src={CgClose} class="text-xl" />
             </span>
           </ConfirmPopover>
+        {/if}
+        {#if cuurent_project?.project_url}
+          <a
+            class="btn m-0 ml-1.5 p-0 hover:text-blue-600 dark:hover:text-blue-500"
+            href={cuurent_project.project_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`${cuurent_project.project_name} Project`}
+          >
+            <Icon src={OiLinkExternal16} class="text-lg" />
+          </a>
         {/if}
       </div>
       {@const project = projects.find(
@@ -269,7 +295,7 @@
 {/if}
 
 {#snippet add_project(new_list = false)}
-  {#if $project_list.isSuccess && $projects_info.data!.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
+  {#if $project_list.isSuccess && user_info.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
     <Popover
       bind:open={add_project_popup}
       positioning={{ placement: new_list ? 'right' : 'bottom' }}
@@ -292,7 +318,7 @@
       {/snippet}
       {#snippet content()}
         {#each $project_list.data as project}
-          {#if $projects_info.data!.is_approved && !$projects_info.data!.projects.find((p) => p.project_id === project.id)}
+          {#if user_info.is_approved && !$projects_info.data!.projects.find((p) => p.project_id === project.id)}
             <div class="block w-full">
               <ConfirmPopover
                 popup_state={false}

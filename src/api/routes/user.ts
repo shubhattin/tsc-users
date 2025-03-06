@@ -6,7 +6,6 @@ import {
   language,
   project,
   user,
-  user_info,
   user_project_join,
   user_project_language_join
 } from '~/db/schema';
@@ -19,34 +18,13 @@ const router = new Hono()
     const user_session_info = c.get('user')!;
     const user_param_id = c.req.param('id');
     await delay(550);
-    const is_approved = (
-      await db.query.user_info.findFirst({
-        columns: {
-          is_approved: true
-        },
-        where: ({ id }, { eq }) => eq(id, user_param_id)
-      })
-    )?.is_approved;
+    const is_approved = user_session_info.is_approved;
     if (
       (user_session_info.role !== 'admin' && user_session_info.id !== user_param_id) ||
       !is_approved
     ) {
-      return c.json<
-        | { is_approved: false }
-        | {
-            is_approved: true;
-            projects: {
-              project_id: number;
-              project_name: string;
-              project_description: string | null;
-              langugaes: {
-                lang_id: number;
-                lang_name: string;
-              }[];
-            }[];
-          }
-      >({
-        is_approved: false
+      return c.json({
+        projects: []
       });
     }
 
@@ -54,7 +32,8 @@ const router = new Hono()
       .select({
         project_id: project.id,
         project_name: project.name,
-        project_description: project.description
+        project_description: project.description,
+        project_url: project.url
       })
       .from(user_project_join)
       .where(eq(user_project_join.user_id, user_param_id))
@@ -82,7 +61,6 @@ const router = new Hono()
       })
     );
     return c.json({
-      is_approved: true,
       projects
     });
   })
@@ -94,14 +72,8 @@ const router = new Hono()
         id: true,
         name: true,
         email: true,
-        role: true
-      },
-      with: {
-        user_info: {
-          columns: {
-            is_approved: true
-          }
-        }
+        role: true,
+        is_approved: true
       },
       where: ({ id }, { ne }) => ne(id, user_session_info.id)
     });
@@ -109,17 +81,7 @@ const router = new Hono()
   })
   .post('/approve/:id', protectedAdminRoute, async (c) => {
     const user_id = c.req.param('id');
-    const user_exists = await db.query.user_info.findFirst({
-      where: ({ id }, { eq }) => eq(id, user_id)
-    });
-    if (user_exists) {
-      await db.update(user_info).set({ is_approved: true }).where(eq(user_info.id, user_id));
-    } else {
-      await db.insert(user_info).values({
-        id: user_id,
-        is_approved: true
-      });
-    }
+    await db.update(user).set({ is_approved: true }).where(eq(user.id, user_id));
     return c.json({ success: true });
   })
   .post('/remove/:id', protectedAdminRoute, async (c) => {

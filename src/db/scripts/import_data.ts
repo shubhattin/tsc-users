@@ -10,7 +10,6 @@ const main = async () => {
   const user = await db.query.user.findMany();
   const account = await db.query.account.findMany();
   const verification = await db.query.verification.findMany();
-  const user_info = await db.query.user_info.findMany();
   const project = await db.query.project.findMany();
   const language = await db.query.language.findMany();
   const user_project_join = await db.query.user_project_join.findMany();
@@ -20,7 +19,6 @@ const main = async () => {
     user,
     account,
     verification,
-    user_info,
     project,
     language,
     user_project_join,
