@@ -23,9 +23,9 @@
     if ($selected_user_type === 'admin') {
       return users.filter((user) => user.role === 'admin');
     } else if ($selected_user_type === 'regular') {
-      return users.filter((user) => user.role === 'user' && user.user_info?.is_approved);
+      return users.filter((user) => user.role === 'user' && user.is_approved);
     } else if ($selected_user_type === 'unapproved') {
-      return users.filter((user) => user.role !== 'admin' && !user.user_info?.is_approved);
+      return users.filter((user) => user.role !== 'admin' && !user.is_approved);
     }
   };
 
@@ -71,15 +71,7 @@
             <div class="mt-2 ml-0 w-full sm:ml-2">
               {#if user}
                 {#if $selected_user_type === 'regular' || $selected_user_type === 'unapproved'}
-                  <NonAdminInfo
-                    user_info={{
-                      id: user.id,
-                      name: user.name,
-                      email: user.email,
-                      role: user.role
-                    }}
-                    admin_edit={true}
-                  />
+                  <NonAdminInfo user_info={user} admin_edit={true} />
                 {:else if $selected_user_type === 'admin'}
                   <div class="mt-2 text-base font-semibold">{user.name}</div>
                   <a

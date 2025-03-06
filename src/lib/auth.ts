@@ -5,6 +5,7 @@ import * as schema from '../db/schema';
 import { env } from '$env/dynamic/private';
 import { admin, openAPI } from 'better-auth/plugins';
 import { COOKIE_CACHE_TIME_MS } from './cache-time';
+import { userInfoPlugin } from './auth_plugins/user_info/server';
 
 export const ALLOWRD_ORIGINS = (() => {
   if (import.meta.env.DEV) return ['http://localhost:5173'];
@@ -31,7 +32,8 @@ export const auth = betterAuth({
     // we do we have it enabled but we are not using username auth now
     // to keep it simple its google auth only for now
     admin(),
-    ...(import.meta.env.DEV ? [openAPI()] : [])
+    ...(import.meta.env.DEV ? [openAPI()] : []),
+    userInfoPlugin()
   ],
   session: {
     cookieCache: {

@@ -8,7 +8,6 @@ import {
   project,
   user_project_join,
   user_project_language_join,
-  user_info,
   verification
 } from '~/db/schema';
 import {
@@ -18,7 +17,6 @@ import {
   ProjectSchemaZod,
   UserProjectJoinSchemaZod,
   UserProjectLanguageJoinSchemaZod,
-  UserInfoSchemaZod,
   VerificationSchemaZod
 } from '~/db/schema_zod';
 import { z } from 'zod';
@@ -49,7 +47,6 @@ const main = async () => {
       project: ProjectSchemaZod.array(),
       user_project_join: UserProjectJoinSchemaZod.array(),
       user_project_language_join: UserProjectLanguageJoinSchemaZod.array(),
-      user_info: UserInfoSchemaZod.array(),
       verification: VerificationSchemaZod.array()
     })
     .parse(JSON.parse((await readFile(`./out/${in_file_name}`)).toString()));
@@ -59,13 +56,11 @@ const main = async () => {
     await db.delete(user);
     await db.delete(account);
     await db.delete(verification);
-    await db.delete(user_info);
     await db.delete(project);
     await db.delete(language);
     await db.delete(user_project_join);
     await db.delete(user_project_language_join);
     await db.delete(user_project_language_join);
-    await db.delete(user_info);
     console.log(chalk.green('✓ Deleted All Tables Successfully'));
   } catch (e) {
     console.log(chalk.red('✗ Error while deleting tables:'), chalk.yellow(e));
@@ -96,14 +91,6 @@ const main = async () => {
     );
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting verification:'), chalk.yellow(e));
-  }
-
-  // inserting user_info
-  try {
-    await db.insert(user_info).values(data.user_info);
-    console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`user_info`'));
-  } catch (e) {
-    console.log(chalk.red('✗ Error while inserting user_info:'), chalk.yellow(e));
   }
 
   // inserting project

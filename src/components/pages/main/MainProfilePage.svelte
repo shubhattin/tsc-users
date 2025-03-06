@@ -120,14 +120,7 @@
 >
 <div class="mt-3">
   {#if user.role === 'user'}
-    <NonAdminInfo
-      user_info={{
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }}
-    />
+    <NonAdminInfo user_info={user} />
   {:else if user.role === 'admin'}
     <AdminPanel />
   {/if}

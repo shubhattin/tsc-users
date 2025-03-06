@@ -6,7 +6,6 @@ import {
   project,
   user_project_join,
   user_project_language_join,
-  user_info,
   verification
 } from './schema';
 import { createSelectSchema } from 'drizzle-zod';
@@ -31,4 +30,3 @@ export const ProjectSchemaZod = createSelectSchema(project);
 export const LanguageSchemaZod = createSelectSchema(language);
 export const UserProjectJoinSchemaZod = createSelectSchema(user_project_join);
 export const UserProjectLanguageJoinSchemaZod = createSelectSchema(user_project_language_join);
-export const UserInfoSchemaZod = createSelectSchema(user_info);

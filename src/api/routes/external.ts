@@ -11,31 +11,11 @@ const router = new Hono().get('/user_info_project', protectedRoute, async (c) =>
   const user_param_id = z.string().parse(c.req.query('user_id'));
   const project_id = z.coerce.number().int().parse(c.req.query('project_id'));
   await delay(550);
-  const is_approved = (
-    await db.query.user_info.findFirst({
-      columns: {
-        is_approved: true
-      },
-      where: ({ id }, { eq }) => eq(id, user_param_id)
-    })
-  )?.is_approved;
-  if (
-    (user_session_info.role !== 'admin' && user_session_info.id !== user_param_id) ||
-    !is_approved
-  ) {
-    return c.json<
-      | { is_approved: false }
-      | {
-          is_approved: true;
-          langugaes: {
-            lang_id: number;
-            lang_name: string;
-          };
-        }
-    >({
-      is_approved: false
+  const is_approved = user_session_info.is_approved;
+  if (!is_approved)
+    return c.json({
+      languages: []
     });
-  }
   const langugaes = await db
     .select({
       lang_id: language.id,
@@ -51,7 +31,6 @@ const router = new Hono().get('/user_info_project', protectedRoute, async (c) =>
     .innerJoin(language, eq(user_project_language_join.language_id, language.id));
 
   return c.json({
-    is_approved: true,
     langugaes
   });
 });
