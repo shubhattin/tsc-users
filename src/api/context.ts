@@ -24,7 +24,7 @@ export const getUserSessionMiddleware = async (c: Context, next: Next) => {
 
 export const protectedRoute = async (c: Context, next: Next) => {
   const user = c.get('user');
-  if (!user) {
+  if (!user || !user.is_approved) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
   await next();
