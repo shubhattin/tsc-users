@@ -4,6 +4,7 @@
   import { Segment, Tabs } from '@skeletonlabs/skeleton-svelte';
   import NonAdminInfo from './NonAdminInfo.svelte';
   import { selected_user_id, selected_user_type } from '~/state/main';
+  import RevokeSessions from './RevokeSessions.svelte';
 
   const users_list = createQuery({
     queryKey: ['users_list'],
@@ -78,6 +79,7 @@
                     class="text-xs text-slate-500 sm:text-sm dark:text-slate-400"
                     href={`emailto:${user.email}`}>{user.email}</a
                   >
+                  <RevokeSessions user_id={user.id} />
                 {/if}
               {/if}
             </div>
