@@ -9,6 +9,10 @@ export const userInfoPlugin = () => {
           is_approved: {
             type: 'boolean',
             defaultValue: false
+          },
+          is_maintainer: {
+            type: 'boolean',
+            defaultValue: false
           }
         }
       }

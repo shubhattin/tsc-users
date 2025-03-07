@@ -1,6 +1,11 @@
 <script lang="ts">
   import { client } from '~/api/client';
-  import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+  import {
+    createMutation,
+    createQuery,
+    useIsFetching,
+    useQueryClient
+  } from '@tanstack/svelte-query';
   import ConfirmPopover from '~/components/PopoverModals/ConfirmPopover.svelte';
   import { language_list, project_list, selected_user_id, selected_user_type } from '~/state/main';
   import Icon from '~/tools/Icon.svelte';
@@ -9,10 +14,12 @@
   import { Popover } from '@skeletonlabs/skeleton-svelte';
   import { CgClose } from 'svelte-icons-pack/cg';
   import { FiEdit3 } from 'svelte-icons-pack/fi';
-  import { authClient } from '~/lib/auth-client';
+  import { authClient, useSession } from '~/lib/auth-client';
   import { OiLinkExternal16 } from 'svelte-icons-pack/oi';
 
   const query_client = useQueryClient();
+  const session = useSession();
+  let current_user = $derived($session.data?.user);
 
   let {
     user_info,
@@ -144,6 +151,36 @@
       queryKey: ['user_info', user_info.id],
       exact: true
     });
+  };
+
+  const userSessions_q = $derived(
+    createQuery({
+      queryKey: ['user_sessions', user_info.id],
+      queryFn: async () => {
+        const { data } = await authClient.admin.listUserSessions({
+          userId: user_info.id
+        });
+        return data?.sessions;
+      },
+      enabled: admin_edit && current_user?.is_maintainer
+    })
+  );
+
+  const revoke_user_session_mut = createMutation({
+    mutationFn: async () => {
+      await authClient.admin.revokeUserSessions({
+        userId: user_info.id
+      });
+    },
+    onSuccess: () => {
+      query_client.invalidateQueries({
+        queryKey: ['user_sessions', user_info.id]
+      });
+    }
+  });
+
+  const revoke_user_sessions_func = async () => {
+    await $revoke_user_session_mut.mutateAsync();
   };
 </script>
 
@@ -290,6 +327,30 @@
       {/if}
     {/if}
   {/if}
+  {#if admin_edit && current_user?.is_maintainer}
+    <div class="mt-8">
+      <div class="dark:text-warning-400 text-warning-500 mb-1.5 text-base font-semibold">
+        User Sessions
+      </div>
+      {#if !$userSessions_q.isFetching && $userSessions_q.isSuccess}
+        {@const sessions = $userSessions_q.data}
+        {#if sessions && sessions.length > 0}
+          <div>
+            User has {sessions.length} sessions
+          </div>
+          <button
+            ondblclick={revoke_user_sessions_func}
+            class="bg-error-500 mt-1 rounded-md px-1.5 py-1 text-sm font-semibold"
+            >Revoke All Sessions</button
+          >
+        {:else}
+          <div>User has no sessions</div>
+        {/if}
+      {:else}
+        <div class="placeholder h-6 w-40 animate-pulse"></div>
+      {/if}
+    </div>
+  {/if}
 {:else}
   <div class="placeholder h-40 w-full animate-pulse rounded-md"></div>
 {/if}
@@ -370,6 +431,7 @@
         {/each}
       </select>
       <button
+        disabled={$revoke_user_session_mut.isPending}
         onclick={() => {
           langugae_select_popover = false;
           add_language_to_project(parseInt(selected_project_id), selected_langs_ids);

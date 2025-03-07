@@ -13,7 +13,8 @@ export const user = pgTable('user', {
   banned: boolean('banned'),
   banReason: text('ban_reason'),
   banExpires: timestamp('ban_expires'),
-  is_approved: boolean('is_approved')
+  is_approved: boolean('is_approved'),
+  is_maintainer: boolean('is_maintainer')
 });
 
 export const account = pgTable('account', {

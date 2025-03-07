@@ -1,5 +1,5 @@
 {
-  "id": "c628cbbf-f36e-47f3-8954-dad234b8cd1d",
+  "id": "fc303a3c-0baa-41f9-a18c-9b8767c702c9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -389,6 +389,12 @@
         },
         "is_approved": {
           "name": "is_approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_maintainer": {
+          "name": "is_maintainer",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false

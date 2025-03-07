@@ -53,6 +53,7 @@ CREATE TABLE "user" (
 	"ban_reason" text,
 	"ban_expires" timestamp,
 	"is_approved" boolean,
+	"is_maintainer" boolean,
 	CONSTRAINT "user_email_unique" UNIQUE("email"),
 	CONSTRAINT "user_username_unique" UNIQUE("username")
 );
