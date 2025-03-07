@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { Modal, Popover } from '@skeletonlabs/skeleton-svelte';
   import { CgMenuGridO } from 'svelte-icons-pack/cg';
-  import { BiLogOut } from 'svelte-icons-pack/bi';
+  import { BiLogOut, BiRename } from 'svelte-icons-pack/bi';
   import { signOut, authClient } from '~/lib/auth-client';
   import Icon from '~/tools/Icon.svelte';
   import NonAdminInfo from './NonAdminInfo.svelte';
@@ -10,6 +10,7 @@
   import { useQueryClient, useIsFetching } from '@tanstack/svelte-query';
   import { LuRefreshCw } from 'svelte-icons-pack/lu';
   import { cl_join } from '~/tools/cl_join';
+  import UpdateName from './UpdateName.svelte';
 
   const query_client = useQueryClient();
 
@@ -60,8 +61,8 @@
     bind:open={dot_popover_status}
     positioning={{ placement: 'bottom' }}
     arrow={false}
-    contentBase="card z-50 space-y-2 rounded-lg px-1 py-1 shadow-xl bg-surface-100-900"
-    triggerBase="m-0 ml-6 sm:mk-10"
+    contentBase="card z-50 rounded-lg px-1 py-1 shadow-xl bg-surface-100-900"
+    triggerBase="m-0 ml-2 sm:ml-6"
   >
     {#snippet trigger()}
       <span
@@ -71,37 +72,40 @@
       </span>
     {/snippet}
     {#snippet content()}
-      <Modal
-        bind:open={logout_modal_status}
-        contentBase="card z-60 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-        backdropBackground="backdrop-blur-xs"
-      >
-        {#snippet trigger()}
-          <span
-            class="btn flex gap-1 space-x-1 rounded-md px-1 py-0 hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            <Icon class="text-2xl" src={BiLogOut} />
-            <span class="text-sm font-semibold">Logout</span>
-          </span>
-        {/snippet}
-        {#snippet content()}
-          <div class="text-lg font-bold">Are you sure to logout ?</div>
-          <div class="space-x-2">
-            <button
-              class="btn bg-surface-200 dark:bg-surface-700 rounded-lg font-semibold"
-              onclick={log_out}
+      <div class="flex flex-col items-center justify-center space-y-1">
+        <UpdateName />
+        <Modal
+          bind:open={logout_modal_status}
+          contentBase="card z-60 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
+          backdropBackground="backdrop-blur-xs"
+        >
+          {#snippet trigger()}
+            <span
+              class="btn flex w-full gap-1 space-x-1 rounded-md px-1 py-0 hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              Confirm
-            </button>
-            <button
-              onclick={() => (logout_modal_status = false)}
-              class="btn preset-outlined-surface-800-200 rounded-lg font-semibold"
-            >
-              Cancel
-            </button>
-          </div>
-        {/snippet}
-      </Modal>
+              <Icon class="text-2xl" src={BiLogOut} />
+              <span class="text-sm font-semibold">Logout</span>
+            </span>
+          {/snippet}
+          {#snippet content()}
+            <div class="text-lg font-bold">Are you sure to logout ?</div>
+            <div class="space-x-2">
+              <button
+                class="btn bg-surface-200 dark:bg-surface-700 rounded-lg font-semibold"
+                onclick={log_out}
+              >
+                Confirm
+              </button>
+              <button
+                onclick={() => (logout_modal_status = false)}
+                class="btn preset-outlined-surface-800-200 rounded-lg font-semibold"
+              >
+                Cancel
+              </button>
+            </div>
+          {/snippet}
+        </Modal>
+      </div>
     {/snippet}
   </Popover>
   <button
