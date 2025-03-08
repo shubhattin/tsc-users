@@ -3,7 +3,7 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db, redis } from '../db/db';
 import * as schema from '../db/schema';
 import { env } from '$env/dynamic/private';
-import { admin, openAPI, captcha } from 'better-auth/plugins';
+import { admin, openAPI } from 'better-auth/plugins';
 import { COOKIE_CACHE_TIME_MS } from './cache-time';
 import { userInfoPlugin } from './auth_plugins/user_info/server';
 
@@ -33,11 +33,11 @@ export const auth = betterAuth({
     // to keep it simple its google auth only for now
     admin(),
     ...(import.meta.env.DEV ? [openAPI()] : []),
-    userInfoPlugin(),
-    captcha({
-      provider: 'cloudflare-turnstile',
-      secretKey: env.TURNSTILE_SECRET_KEY!
-    })
+    userInfoPlugin()
+    // captcha({
+    //   provider: 'cloudflare-turnstile',
+    //   secretKey: env.TURNSTILE_SECRET_KEY!
+    // })
   ],
   session: {
     cookieCache: {

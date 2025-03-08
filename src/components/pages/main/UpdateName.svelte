@@ -63,7 +63,7 @@
       <div class="space-x-1 sm:space-x-2">
         <button
           disabled={!is_edited || $update_name_mut.isPending}
-          class="btn bg-secondary-600 rounded-lg px-2 py-1 text-sm font-semibold text-white"
+          class="btn dark:bg-secondary-700 bg-secondary-600 rounded-lg px-2 py-1 text-sm font-semibold text-white"
           onclick={update_user_name_func}>Update</button
         >
         <button
