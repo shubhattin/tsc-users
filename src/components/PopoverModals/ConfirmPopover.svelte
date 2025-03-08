@@ -45,7 +45,7 @@
     <div class="space-x-2">
       <button
         class={cl_join(
-          'btn bg-surface-200 dark:bg-surface-700 rounded-lg font-semibold',
+          'btn rounded-lg bg-surface-200 font-semibold dark:bg-surface-700',
           className
         )}
         onclick={confirm_func}
@@ -57,7 +57,7 @@
           popup_state = false;
           cancel_func && cancel_func();
         }}
-        class={cl_join('btn preset-outline-surface-800-200 rounded-lg font-semibold', className)}
+        class={cl_join('preset-outline-surface-800-200 btn rounded-lg font-semibold', className)}
       >
         Cancel
       </button>

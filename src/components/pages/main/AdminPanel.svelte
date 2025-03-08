@@ -89,5 +89,5 @@
     {/snippet}
   </Tabs>
 {:else}
-  <div class="placeholder h-96 animate-pulse rounded-md"></div>
+  <div class="h-96 placeholder animate-pulse rounded-md"></div>
 {/if}

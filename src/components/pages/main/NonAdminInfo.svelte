@@ -159,11 +159,11 @@
   {/if}
   {#if !user_info.is_approved}
     {#if !admin_edit}
-      <div class="dark:text-warning-500 text-warning-600">
+      <div class="text-warning-600 dark:text-warning-500">
         Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
       </div>
     {:else}
-      <div class="dark:text-warning-500 text-warning-600 mt-2">
+      <div class="mt-2 text-warning-600 dark:text-warning-500">
         This account has not been Approved.
       </div>
       <div class="space-x-2">
@@ -177,7 +177,7 @@
           description="Sure to Approve this User ?"
         >
           <span
-            class="btn dark:bg-primary-600 bg-primary-500 mt-1.5 gap-1 px-1.5 py-0 text-sm font-bold text-white"
+            class="mt-1.5 btn gap-1 bg-primary-500 px-1.5 py-0 text-sm font-bold text-white dark:bg-primary-600"
           >
             <Icon src={BsCheckLg} class="text-xl" />
             Approve
@@ -193,7 +193,7 @@
           description="Sure to Remove this User ?"
         >
           <span
-            class="btn mt-1.5 gap-1 bg-rose-500 px-1.5 py-0 text-sm font-bold text-white dark:bg-rose-600"
+            class="mt-1.5 btn gap-1 bg-rose-500 px-1.5 py-0 text-sm font-bold text-white dark:bg-rose-600"
           >
             <Icon src={CgClose} class="text-xl" />
             Remove
@@ -244,7 +244,7 @@
         {/if}
         {#if cuurent_project?.project_url}
           <a
-            class="btn m-0 ml-1.5 p-0 hover:text-blue-600 dark:hover:text-blue-500"
+            class="m-0 ml-1.5 btn p-0 hover:text-blue-600 dark:hover:text-blue-500"
             href={cuurent_project.project_url}
             target="_blank"
             rel="noopener noreferrer"
@@ -295,7 +295,7 @@
     <RevokeSessions user_id={user_info.id} />
   {/if}
 {:else}
-  <div class="placeholder h-40 w-full animate-pulse rounded-md"></div>
+  <div class="h-40 placeholder w-full animate-pulse rounded-md"></div>
 {/if}
 
 {#snippet add_project(new_list = false)}
@@ -310,7 +310,7 @@
       {#snippet trigger()}
         <span
           class={cl_join(
-            'dark:bg-primary-600 bg-primary-500 gap-1 rounded-md px-1 py-1 font-semibold text-white',
+            'gap-1 rounded-md bg-primary-500 px-1 py-1 font-semibold text-white dark:bg-primary-600',
             new_list && 'px-2'
           )}
         >
@@ -355,13 +355,13 @@
       {#if admin_edit && $language_list.isSuccess}
         {#if new_list}
           <button
-            class="btn dark:bg-primary-600 bg-primary-500 gap-1 rounded-md px-1.5 py-0 text-sm"
+            class="btn gap-1 rounded-md bg-primary-500 px-1.5 py-0 text-sm dark:bg-primary-600"
           >
             <Icon src={BsPlusLg} class="text-xl" />
             Add Language
           </button>
         {:else}
-          <button class="btn m-0 ml-1.5 p-0">
+          <button class="m-0 ml-1.5 btn p-0">
             <Icon src={FiEdit3} class="text-xl" />
           </button>
         {/if}
@@ -378,7 +378,7 @@
           langugae_select_popover = false;
           add_language_to_project(parseInt(selected_project_id), selected_langs_ids);
         }}
-        class="dark:bg-tertiary-600 bg-tertiary-500 btn mt-2 rounded-md px-2 py-1 text-white"
+        class="mt-2 btn rounded-md bg-tertiary-500 px-2 py-1 text-white dark:bg-tertiary-600"
         >Update</button
       >
     {/snippet}

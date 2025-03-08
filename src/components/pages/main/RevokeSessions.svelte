@@ -42,7 +42,7 @@
 
 {#if user_info?.is_maintainer}
   <div class="mt-8">
-    <div class="dark:text-warning-400 text-warning-500 mb-1.5 text-base font-semibold">
+    <div class="mb-1.5 text-base font-semibold text-warning-500 dark:text-warning-400">
       User Sessions
     </div>
     {#if !$userSessions_q.isFetching && $userSessions_q.isSuccess}
@@ -54,14 +54,14 @@
         <button
           disabled={$revoke_user_session_mut.isPending}
           ondblclick={revoke_user_sessions_func}
-          class="bg-error-500 mt-1 rounded-md px-1.5 py-1 text-sm font-semibold"
+          class="mt-1 rounded-md bg-error-500 px-1.5 py-1 text-sm font-semibold"
           >Revoke All Sessions</button
         >
       {:else}
         <div>User has no sessions</div>
       {/if}
     {:else}
-      <div class="placeholder h-6 w-40 animate-pulse"></div>
+      <div class="h-6 placeholder w-40 animate-pulse"></div>
     {/if}
   </div>
 {/if}

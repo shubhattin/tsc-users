@@ -91,14 +91,14 @@
             <div class="text-lg font-bold">Are you sure to logout ?</div>
             <div class="space-x-2">
               <button
-                class="btn bg-surface-200 dark:bg-surface-700 rounded-lg font-semibold"
+                class="btn rounded-lg bg-surface-200 font-semibold dark:bg-surface-700"
                 onclick={log_out}
               >
                 Confirm
               </button>
               <button
                 onclick={() => (logout_modal_status = false)}
-                class="btn preset-outlined-surface-800-200 rounded-lg font-semibold"
+                class="btn rounded-lg preset-outlined-surface-800-200 font-semibold"
               >
                 Cancel
               </button>
@@ -110,7 +110,7 @@
   </Popover>
   <button
     class={cl_join(
-      'btn m-0 ml-3 p-0 text-sm outline-hidden select-none hover:text-gray-500 sm:ml-4 dark:hover:text-gray-400',
+      'm-0 ml-3 btn p-0 text-sm outline-hidden select-none hover:text-gray-500 sm:ml-4 dark:hover:text-gray-400',
       is_fetching && 'animate-spin'
     )}
     onclick={refresh_data}
