@@ -311,7 +311,7 @@
       {#snippet trigger()}
         <span
           class={cl_join(
-            'btn gap-1 rounded-md bg-primary-500 px-1 py-0 font-semibold text-white dark:bg-primary-600',
+            'btn gap-1 rounded-md bg-primary-500 px-1 py-0.5 font-semibold text-white dark:bg-primary-600',
             new_list && 'px-2'
           )}
         >
@@ -357,7 +357,7 @@
       {#if admin_edit && $language_list.isSuccess}
         {#if new_list}
           <button
-            class="btn gap-1 rounded-md bg-primary-500 px-1.5 py-0 text-sm dark:bg-primary-600"
+            class="btn gap-1 rounded-md bg-primary-500 px-1.5 py-0.5 text-sm dark:bg-primary-600"
           >
             <Icon src={BsPlusLg} class="text-xl" />
             Add Language
