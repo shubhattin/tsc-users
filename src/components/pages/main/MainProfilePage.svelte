@@ -63,7 +63,7 @@
     positioning={{ placement: 'bottom' }}
     arrow={false}
     contentBase="card z-50 rounded-lg px-1 py-1 shadow-xl bg-surface-100-900"
-    triggerBase="m-0 ml-2 sm:ml-6"
+    triggerBase="ml-2 sm:ml-6"
   >
     {#snippet trigger()}
       <span
@@ -112,7 +112,7 @@
   </Popover>
   <button
     class={cl_join(
-      'm-0 ml-3 btn p-0 text-sm outline-hidden select-none hover:text-gray-500 sm:ml-4 dark:hover:text-gray-400',
+      'ml-3 btn p-0 text-sm outline-hidden select-none hover:text-gray-500 sm:ml-4 dark:hover:text-gray-400',
       is_fetching && 'animate-spin'
     )}
     onclick={refresh_data}

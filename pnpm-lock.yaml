@@ -79,10 +79,10 @@ importers:
         version: 3.24.2
     devDependencies:
       '@skeletonlabs/skeleton':
-        specifier: 3.0.0
+        specifier: ^3.0.0
         version: 3.0.0(tailwindcss@4.0.14)
       '@skeletonlabs/skeleton-svelte':
-        specifier: 1.0.0
+        specifier: ^1.0.0
         version: 1.0.0(@skeletonlabs/skeleton@3.0.0(tailwindcss@4.0.14))(svelte@5.23.0)
       '@sveltejs/adapter-netlify':
         specifier: ^4.4.2

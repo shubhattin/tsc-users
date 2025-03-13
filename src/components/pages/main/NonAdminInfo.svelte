@@ -244,7 +244,7 @@
         {/if}
         {#if cuurent_project?.project_url}
           <a
-            class="m-0 ml-1.5 btn p-0 hover:text-blue-600 dark:hover:text-blue-500"
+            class="ml-1.5 btn p-0 hover:text-blue-600 dark:hover:text-blue-500"
             href={cuurent_project.project_url}
             target="_blank"
             rel="noopener noreferrer"
@@ -311,7 +311,7 @@
       {#snippet trigger()}
         <span
           class={cl_join(
-            'gap-1 rounded-md bg-primary-500 px-1 py-1 font-semibold text-white dark:bg-primary-600',
+            'btn gap-1 rounded-md bg-primary-500 px-1 py-0 font-semibold text-white dark:bg-primary-600',
             new_list && 'px-2'
           )}
         >
@@ -363,7 +363,7 @@
             Add Language
           </button>
         {:else}
-          <button class="m-0 ml-1.5 btn p-0">
+          <button class="ml-1.5 btn p-0">
             <Icon src={FiEdit3} class="text-xl" />
           </button>
         {/if}
