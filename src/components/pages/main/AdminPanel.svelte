@@ -37,7 +37,11 @@
 </script>
 
 {#if !$users_list.isFetching && $users_list.isSuccess}
-  <Tabs bind:value={$selected_user_type} base="mt-6">
+  <Tabs
+    value={$selected_user_type}
+    base="mt-6"
+    onValueChange={(e) => ($selected_user_type = e.value as typeof $selected_user_type)}
+  >
     {#snippet list()}
       <Tabs.Control labelClasses="rounded-md font-semibold" value="admin">Admin</Tabs.Control>
       <Tabs.Control labelClasses="rounded-md font-semibold" value="regular">Regular</Tabs.Control>

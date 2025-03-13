@@ -34,7 +34,8 @@
 </script>
 
 <Modal
-  bind:open={update_name_modal_status}
+  open={update_name_modal_status}
+  onOpenChange={(e) => (update_name_modal_status = e.open)}
   contentBase="card z-60 space-y-2 rounded-lg px-3 py-4 shadow-xl dark:bg-surface-900 bg-zinc-100"
   backdropBackground="backdrop-blur-xs"
 >

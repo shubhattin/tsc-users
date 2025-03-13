@@ -301,7 +301,8 @@
 {#snippet add_project(new_list = false)}
   {#if $project_list.isSuccess && user_info.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
     <Popover
-      bind:open={add_project_popup}
+      open={add_project_popup}
+      onOpenChange={(e) => (add_project_popup = e.open)}
       positioning={{ placement: new_list ? 'right' : 'bottom' }}
       arrow={false}
       contentBase="card z-50 space-y-1 sm:space-y-1.5 rounded-lg px-2 py-1 shadow-xl bg-surface-100-900"
@@ -345,7 +346,8 @@
 {/snippet}
 {#snippet add_language(new_list = false)}
   <Popover
-    bind:open={langugae_select_popover}
+    open={langugae_select_popover}
+    onOpenChange={(e) => (langugae_select_popover = e.open)}
     positioning={{ placement: new_list ? 'right' : 'bottom' }}
     arrow={false}
     contentBase="card z-50 sm:space-y-1.5 rounded-lg px-2 py-1 shadow-xl bg-surface-100-900"

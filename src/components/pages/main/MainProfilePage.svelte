@@ -58,7 +58,8 @@
 <div>
   <span class="text-lg font-semibold sm:text-xl">{user.name}</span>
   <Popover
-    bind:open={dot_popover_status}
+    open={dot_popover_status}
+    onOpenChange={(e) => (dot_popover_status = e.open)}
     positioning={{ placement: 'bottom' }}
     arrow={false}
     contentBase="card z-50 rounded-lg px-1 py-1 shadow-xl bg-surface-100-900"
@@ -75,7 +76,8 @@
       <div class="flex flex-col items-center justify-center space-y-1">
         <UpdateName />
         <Modal
-          bind:open={logout_modal_status}
+          open={logout_modal_status}
+          onOpenChange={(e) => (logout_modal_status = e.open)}
           contentBase="card z-60 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
           backdropBackground="backdrop-blur-xs"
         >
