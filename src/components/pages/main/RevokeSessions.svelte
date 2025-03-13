@@ -54,7 +54,7 @@
         <button
           disabled={$revoke_user_session_mut.isPending}
           ondblclick={revoke_user_sessions_func}
-          class="mt-1 rounded-md bg-error-500 px-1.5 py-1 text-sm font-semibold"
+          class="mt-1 btn rounded-md bg-error-500 px-1.5 py-1 text-sm font-semibold"
           >Revoke All Sessions</button
         >
       {:else}

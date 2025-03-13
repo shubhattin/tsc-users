@@ -50,7 +50,7 @@
     <div class="space-x-2">
       <button
         class={cl_join(
-          'btn-hover btn rounded-lg bg-zinc-500 font-semibold text-white dark:bg-surface-700',
+          'btn rounded-lg bg-zinc-500 font-semibold text-white dark:bg-surface-700',
           className
         )}
         onclick={() => {
@@ -65,10 +65,7 @@
           popup_state = false;
           cancel_func && cancel_func();
         }}
-        class={cl_join(
-          'btn-hover btn rounded-lg preset-outlined-surface-800-200 font-semibold',
-          className
-        )}
+        class={cl_join('btn rounded-lg preset-outlined-surface-800-200 font-semibold', className)}
       >
         Cancel
       </button>
