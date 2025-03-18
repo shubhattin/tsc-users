@@ -9,13 +9,11 @@
   import { Popover } from '@skeletonlabs/skeleton-svelte';
   import { CgClose } from 'svelte-icons-pack/cg';
   import { FiEdit3 } from 'svelte-icons-pack/fi';
-  import { authClient, useSession } from '~/lib/auth-client';
+  import { authClient } from '~/lib/auth-client';
   import { OiLinkExternal16 } from 'svelte-icons-pack/oi';
   import RevokeSessions from './RevokeSessions.svelte';
 
   const query_client = useQueryClient();
-  const session = useSession();
-  let current_user_info = $derived($session.data?.user);
 
   let {
     user_info,
@@ -38,15 +36,18 @@
     createQuery({
       queryKey: ['user_info', user_info.id],
       queryFn: async () => {
-        const res = await client.user.user_info[`:id`].$get({
-          param: {
-            id: user_info.id
-          }
-        });
-        const data = await res.json();
-        return data;
-      },
-      enabled: !!(current_user_info && current_user_info.is_approved)
+        try {
+          const res = await client.user.user_info[`:id`].$get({
+            param: {
+              id: user_info.id
+            }
+          });
+          const data = await res.json();
+          return data;
+        } catch {
+          return null;
+        }
+      }
     })
   );
 
@@ -144,11 +145,7 @@
   };
 </script>
 
-{#if !admin_edit && !current_user_info?.is_approved}
-  <div class="text-warning-600 dark:text-warning-500">
-    Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
-  </div>
-{:else if !$projects_info.isFetching && $projects_info.isSuccess}
+{#if !$projects_info.isFetching && $projects_info.isSuccess && $projects_info.data}
   {@const data = $projects_info.data}
   {#if admin_edit}
     <div class="text-base font-semibold">{user_info.name}</div>
@@ -158,7 +155,11 @@
     >
   {/if}
   {#if !user_info.is_approved}
-    {#if admin_edit}
+    {#if !admin_edit}
+      <div class="text-warning-600 dark:text-warning-500">
+        Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
+      </div>
+    {:else}
       <div class="mt-2 text-warning-600 dark:text-warning-500">
         This account has not been Approved.
       </div>
@@ -293,6 +294,7 @@
 {:else}
   <div class="h-40 placeholder w-full animate-pulse rounded-md"></div>
 {/if}
+
 {#snippet add_project(new_list = false)}
   {#if $project_list.isSuccess && user_info.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
     <Popover
