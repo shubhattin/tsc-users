@@ -9,11 +9,13 @@
   import { Popover } from '@skeletonlabs/skeleton-svelte';
   import { CgClose } from 'svelte-icons-pack/cg';
   import { FiEdit3 } from 'svelte-icons-pack/fi';
-  import { authClient } from '~/lib/auth-client';
+  import { authClient, useSession } from '~/lib/auth-client';
   import { OiLinkExternal16 } from 'svelte-icons-pack/oi';
   import RevokeSessions from './RevokeSessions.svelte';
 
   const query_client = useQueryClient();
+  const session = useSession();
+  let current_user_info = $derived($session.data?.user);
 
   let {
     user_info,
@@ -43,7 +45,8 @@
         });
         const data = await res.json();
         return data;
-      }
+      },
+      enabled: !!(current_user_info && current_user_info.is_approved)
     })
   );
 
@@ -74,24 +77,17 @@
 
   const approve_user_func = async () => {
     $projects_info.refetch();
-    const req = await client.user.approve[':id'].$post({
-      param: {
-        id: user_info.id
-      }
-    });
-    authClient.admin.revokeUserSessions({
+    await authClient.user_info.approve_user({
       userId: user_info.id
     });
-    if (req.ok) {
-      query_client.invalidateQueries({
-        queryKey: ['user_info', user_info.id]
-      });
-      query_client.invalidateQueries({
-        queryKey: ['users_list']
-      });
-      $selected_user_type = 'regular';
-      // $selected_user_id = user_info.id;
-    }
+    query_client.invalidateQueries({
+      queryKey: ['user_info', user_info.id]
+    });
+    query_client.invalidateQueries({
+      queryKey: ['users_list']
+    });
+    $selected_user_type = 'regular';
+    // $selected_user_id = user_info.id;
   };
 
   let remove_user_popup = $state(false);
@@ -148,7 +144,11 @@
   };
 </script>
 
-{#if !$projects_info.isFetching && $projects_info.isSuccess}
+{#if !admin_edit && !current_user_info?.is_approved}
+  <div class="text-warning-600 dark:text-warning-500">
+    Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
+  </div>
+{:else if !$projects_info.isFetching && $projects_info.isSuccess}
   {@const data = $projects_info.data}
   {#if admin_edit}
     <div class="text-base font-semibold">{user_info.name}</div>
@@ -158,11 +158,7 @@
     >
   {/if}
   {#if !user_info.is_approved}
-    {#if !admin_edit}
-      <div class="text-warning-600 dark:text-warning-500">
-        Your Account has not been approved yet. <span class="text-xs">Contact the admin</span>
-      </div>
-    {:else}
+    {#if admin_edit}
       <div class="mt-2 text-warning-600 dark:text-warning-500">
         This account has not been Approved.
       </div>
@@ -297,7 +293,6 @@
 {:else}
   <div class="h-40 placeholder w-full animate-pulse rounded-md"></div>
 {/if}
-
 {#snippet add_project(new_list = false)}
   {#if $project_list.isSuccess && user_info.is_approved && $projects_info.data!.projects.length !== $project_list.data.length}
     <Popover
